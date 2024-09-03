@@ -7,8 +7,6 @@ import { SUBJECT_ID } from "@/subjectID";
 export default function Word1() {
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
 
-  // const word_1 = ["昨日", "自転車"];
-
   useEffect(() => {
     const fetchAllDocuments = async () => {
       try {
@@ -62,7 +60,7 @@ export default function Word1() {
     console.log("Keywordsのstate:", keywords);
   }, [keywords]);
 
-  console.log(keywords);
+  console.log("keywords: ", keywords);
 
   return (
     <div>
@@ -72,12 +70,11 @@ export default function Word1() {
         {keywords.map((item, index) => (
           <li key={index}>
             <Link href={`/${item.episodeID}/${item.value}`}>
-              {item.key}: {item.value}
+              <button>{item.value}</button>
             </Link>
           </li>
         ))}
       </ul>
-
     </div>
   );
 }
