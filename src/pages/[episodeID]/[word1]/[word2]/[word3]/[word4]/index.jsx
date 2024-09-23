@@ -23,7 +23,6 @@ export default function Word4() {
 
         // クエリで、指定された単語(word1)を含むドキュメントを取得
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
-        // const q = query(subcollectionRef, where("who", "==", word1));
         const subcollectionSnapshot = await getDocs(q);
 
         // フィールドを一つの配列にまとめる

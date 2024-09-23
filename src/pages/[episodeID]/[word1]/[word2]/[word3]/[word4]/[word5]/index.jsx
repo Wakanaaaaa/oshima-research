@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { SUBJECT_ID } from "@/subjectID";
 
-export default function Word1() {
+export default function Word4() {
   const router = useRouter();
-  const { word1 } = router.query;
+  const { episodeID, word1, word2, word3, word4, word5 } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
 
   useEffect(() => {
@@ -21,7 +21,9 @@ export default function Word1() {
           "episodes"
         );
 
-        const subcollectionSnapshot = await getDocs(subcollectionRef);
+        // クエリで、指定された単語(word1)を含むドキュメントを取得
+        const q = query(subcollectionRef, where("__name__", "==", episodeID));
+        const subcollectionSnapshot = await getDocs(q);
 
         // フィールドを一つの配列にまとめる
         const allFieldsArray = [];
@@ -30,26 +32,13 @@ export default function Word1() {
           const data = doc.data();
           const docID = doc.id;
 
-          if (Object.values(data).includes(word1)) {
-            // そのエピソード内の `word1` 以外の単語をリストに追加
-            for (const [key, value] of Object.entries(data)) {
-              if (value !== word1) {
-                allFieldsArray.push({ key, value, episodeID: docID });
-              }
+          // すべての関連ワードをリストに追加
+          for (const [key, value] of Object.entries(data)) {
+            if (value !== word1 && value !== word2 && value !== word3 && value !== word4 && value !== word5) {
+              allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
         });
-
-        // 重複する単語を削除するために、単語のセットを使って一意の単語を保持
-        const uniqueKeywords = new Map();
-
-        allFieldsArray.forEach((item) => {
-          if (!uniqueKeywords.has(item.value)) {
-            uniqueKeywords.set(item.value, item);
-          }
-        });
-
-        const uniqueFieldsArray = Array.from(uniqueKeywords.values());
 
         // シャッフルとランダムな選択は任意で
         const shuffleArray = (array) => {
@@ -60,7 +49,7 @@ export default function Word1() {
           return array;
         };
 
-        const shuffledArray = shuffleArray(uniqueFieldsArray);
+        const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
 
         // ステートを更新
@@ -70,25 +59,27 @@ export default function Word1() {
       }
     };
 
-    if (word1) {
-      fetchDocumentsForWord1();
-    }
-  }, [word1]);
+    fetchDocumentsForWord1();
+  }, [episodeID, word1, word2, word3, word4, word5]);
 
   return (
     <div>
       <h3>firebaseからのキーワード:</h3>
-      <h3>選択した単語：[ {word1} ]</h3>
+      <h3>
+        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] --- [ {word5}]
+      </h3>
       <ul>
         {keywords.map((item, index) => (
           <li key={index}>
-            <Link href={`/${item.episodeID}/${word1}/${item.value}`}>
+            <Link
+              href={`/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`}
+            >
               <button>{item.value}</button>
             </Link>
           </li>
         ))}
       </ul>
-      <Link href="/">
+      <Link href={`/${episodeID}/${word1}/${word2}/${word3}/${word4}`}>
         <button>戻る</button>
       </Link>
     </div>

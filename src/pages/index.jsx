@@ -60,8 +60,6 @@ export default function Word1() {
     console.log("Keywordsのstate:", keywords);
   }, [keywords]);
 
-  console.log("keywords: ", keywords);
-
   return (
     <div>
       {/* keywordsの内容を画面に表示 */}
