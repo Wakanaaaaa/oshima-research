@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../firebase";
 import { SUBJECT_ID } from "@/subjectID";
+import styles from "../styles/word.module.css";
 
 export default function Word1() {
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
+  const [colors, setColors] = useState([]);
 
   useEffect(() => {
     const fetchAllDocuments = async () => {
@@ -47,6 +49,9 @@ export default function Word1() {
 
         // ステートを更新
         setKeywords(randomFields);
+
+        const randomColors = randomFields.map(() => generateRandomColor());
+        setColors(randomColors);
       } catch (error) {
         console.error("Error fetching subcollection documents: ", error);
       }
@@ -55,22 +60,31 @@ export default function Word1() {
     fetchAllDocuments();
   }, []);
 
-  // keywordsの内容をコンソールに出力
-  useEffect(() => {
-    console.log("Keywordsのstate:", keywords);
-  }, [keywords]);
+  const generateRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
 
   return (
     <div>
       {/* keywordsの内容を画面に表示 */}
-      <h3>firebaseからのキーワード:</h3>
+      {/* <h3>firebaseからのキーワード:</h3> */}
       <ul>
         {keywords.map((item, index) => (
-          <li key={index}>
-            <Link href={`/${item.episodeID}/${item.value}`}>
-              <button>{item.value}</button>
+          <ol key={index}>
+            <Link href={{ pathname:`/${item.episodeID}/${item.value}`,query: { color: colors[index] }, }}>
+              <button
+                className={styles.button}
+                style={{ borderColor: colors[index] }}
+              >
+                {item.value}
+              </button>
             </Link>
-          </li>
+          </ol>
         ))}
       </ul>
     </div>
