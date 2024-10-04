@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { SUBJECT_ID } from "@/subjectID";
+import { shuffleArray } from "../../../../firestoreUtils.jsx";
+import { hexToRgba } from "../../../../colorUtils.jsx";
 
 export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1, word2 } = router.query;
+  const { episodeID, word1, word2, color } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
+  const [bgColor, setBgColor] = useState("#fff"); // デフォルトの背景色
+
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
       try {
-        // 被験者IDに基づいて、指定された単語が含まれるすべてのドキュメントを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
@@ -21,7 +24,6 @@ export default function Word2() {
           "episodes"
         );
 
-        // クエリで、指定された単語(word1)を含むドキュメントを取得
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
@@ -40,15 +42,6 @@ export default function Word2() {
           }
         });
 
-        // シャッフルとランダムな選択は任意で
-        const shuffleArray = (array) => {
-          for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-          }
-          return array;
-        };
-
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
 
@@ -62,19 +55,25 @@ export default function Word2() {
     fetchDocumentsForWord1();
   }, [episodeID, word1, word2]);
 
+    // クエリで渡された背景色を設定
+    useEffect(() => {
+      if (color) {
+        setBgColor(hexToRgba(color, 0.25)); // 50%透明度
+      }
+    }, [color]);
+
   return (
     <div>
-      <h3>firebaseからのキーワード:</h3>
       <h3>
         選択した単語：[ {word1} ]---[ {word2} ]
       </h3>
       <ul>
         {keywords.map((item, index) => (
-          <li key={index}>
+          <ol key={index}>
             <Link href={`/${item.episodeID}/${word1}/${word2}/${item.value}`}>
               <button>{item.value}</button>
             </Link>
-          </li>
+          </ol>
         ))}
       </ul>
       <Link href={`/${episodeID}/${word1}`}>
