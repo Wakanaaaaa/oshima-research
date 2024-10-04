@@ -5,14 +5,17 @@ import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { SUBJECT_ID } from "@/subjectID";
 import { shuffleArray } from "../../../../firestoreUtils.jsx";
-import { hexToRgba } from "../../../../colorUtils.jsx";
+import {
+  generateRandomColor,
+  useBackgroundColor,
+} from "../../../../colorUtils.jsx";
+import styles from "../../../../styles/word.module.css";
 
 export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1, word2, color } = router.query;
+  const { episodeID, word1, word2 } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
-  const [bgColor, setBgColor] = useState("#fff"); // デフォルトの背景色
-
+  const [colors, setColors] = useState([]); // カラー用のステート
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -33,7 +36,6 @@ export default function Word2() {
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-
           // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
             if (value !== word1 && value !== word2) {
@@ -47,6 +49,9 @@ export default function Word2() {
 
         // ステートを更新
         setKeywords(randomFields);
+
+        const randomColors = randomFields.map(() => generateRandomColor());
+        setColors(randomColors);
       } catch (error) {
         console.error("Error fetching subcollection documents: ", error);
       }
@@ -55,23 +60,28 @@ export default function Word2() {
     fetchDocumentsForWord1();
   }, [episodeID, word1, word2]);
 
-    // クエリで渡された背景色を設定
-    useEffect(() => {
-      if (color) {
-        setBgColor(hexToRgba(color, 0.25)); // 50%透明度
-      }
-    }, [color]);
+  useBackgroundColor();
 
   return (
-    <div>
+    <div style={{ minHeight: "100vh", padding: "20px" }}>
       <h3>
         選択した単語：[ {word1} ]---[ {word2} ]
       </h3>
       <ul>
         {keywords.map((item, index) => (
           <ol key={index}>
-            <Link href={`/${item.episodeID}/${word1}/${word2}/${item.value}`}>
-              <button>{item.value}</button>
+            <Link
+              href={{
+                pathname: `/${item.episodeID}/${word1}/${word2}/${item.value}`,
+                query: { color: colors[index] },
+              }}
+            >
+              <button
+                className={styles.button}
+                style={{ borderColor: colors[index] }}
+              >
+                {item.value}
+              </button>
             </Link>
           </ol>
         ))}

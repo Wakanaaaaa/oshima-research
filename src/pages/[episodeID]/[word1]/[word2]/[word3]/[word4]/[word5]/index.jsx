@@ -5,12 +5,17 @@ import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { SUBJECT_ID } from "@/subjectID";
 import { shuffleArray } from "../../../../../../../firestoreUtils.jsx";
+import {
+  generateRandomColor,
+  useBackgroundColor,
+} from "../../../../../../../colorUtils.jsx";
+import styles from "../../../../../../../styles/word.module.css";
 
-
-export default function Word4() {
+export default function Word5() {
   const router = useRouter();
   const { episodeID, word1, word2, word3, word4, word5 } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
+  const [colors, setColors] = useState([]); // カラー用のステート
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -32,10 +37,15 @@ export default function Word4() {
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-
           // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
-            if (value !== word1 && value !== word2 && value !== word3 && value !== word4 && value !== word5) {
+            if (
+              value !== word1 &&
+              value !== word2 &&
+              value !== word3 &&
+              value !== word4 &&
+              value !== word5
+            ) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
@@ -46,6 +56,8 @@ export default function Word4() {
 
         // ステートを更新
         setKeywords(randomFields);
+        const randomColors = randomFields.map(() => generateRandomColor());
+        setColors(randomColors);
       } catch (error) {
         console.error("Error fetching subcollection documents: ", error);
       }
@@ -54,18 +66,29 @@ export default function Word4() {
     fetchDocumentsForWord1();
   }, [episodeID, word1, word2, word3, word4, word5]);
 
+  useBackgroundColor();
+
   return (
     <div>
       <h3>
-        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] --- [ {word5}]
+        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
+        [ {word5}]
       </h3>
       <ul>
         {keywords.map((item, index) => (
           <ol key={index}>
             <Link
-              href={`/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`}
+              href={{
+                pathname: `/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`,
+                query: { color: colors[index] },
+              }}
             >
-              <button>{item.value}</button>
+              <button
+                className={styles.button}
+                style={{ borderColor: colors[index] }}
+              >
+                {item.value}
+              </button>
             </Link>
           </ol>
         ))}

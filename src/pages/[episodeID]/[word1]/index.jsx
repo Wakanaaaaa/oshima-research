@@ -62,6 +62,7 @@ export default function Word1() {
   }, [episodeID, word1]);
 
   useBackgroundColor();
+  
   return (
     <div style={{ minHeight: "100vh", padding: "20px" }}>
       <h3>選択した単語：[ {word1} ]</h3>
