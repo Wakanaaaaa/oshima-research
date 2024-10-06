@@ -13,7 +13,7 @@ import styles from "../../../../../../../styles/word.module.css";
 
 export default function Word5() {
   const router = useRouter();
-  const { episodeID, word1, word2, word3, word4, word5 } = router.query;
+  const { episodeID, word1, word2, word3, word4, word5, color } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
 
@@ -68,6 +68,11 @@ export default function Word5() {
 
   useBackgroundColor();
 
+  // useEffect(() => {
+  //   const backgroundColor = applyTransparency(color);
+  //   document.body.style.backgroundColor = backgroundColor;
+  // }, [color]);
+
   return (
     <div>
       <h3>
@@ -93,7 +98,12 @@ export default function Word5() {
           </ol>
         ))}
       </ul>
-      <Link href={`/${episodeID}/${word1}/${word2}/${word3}/${word4}`}>
+      <Link
+        href={{
+          pathname: `/${episodeID}/${word1}/${word2}/${word3}/${word4}`,
+          query: { color },
+        }}
+      >
         <button>戻る</button>
       </Link>
     </div>

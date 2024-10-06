@@ -31,10 +31,8 @@ export default function Word1() {
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
-        // データを一時的に格納する配列
         const allFieldsArray = [];
 
-        // 各ドキュメントをチェック
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
@@ -48,7 +46,6 @@ export default function Word1() {
 
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-        // ステートを更新
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -62,7 +59,7 @@ export default function Word1() {
   }, [episodeID, word1]);
 
   useBackgroundColor();
-  
+
   return (
     <div style={{ minHeight: "100vh", padding: "20px" }}>
       <h3>選択した単語：[ {word1} ]</h3>

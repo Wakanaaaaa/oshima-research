@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -13,7 +13,7 @@ import styles from "../../../../../../styles/word.module.css";
 
 export default function Word4() {
   const router = useRouter();
-  const { episodeID, word1, word2, word3, word4 } = router.query;
+  const { episodeID, word1, word2, word3, word4, color } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
 
@@ -92,7 +92,12 @@ export default function Word4() {
           </ol>
         ))}
       </ul>
-      <Link href={`/${episodeID}/${word1}/${word2}/${word3}`}>
+      <Link
+        href={{
+          pathname: `/${episodeID}/${word1}/${word2}/${word3}`,
+          query: { color },
+        }}
+      >
         <button>戻る</button>
       </Link>
     </div>

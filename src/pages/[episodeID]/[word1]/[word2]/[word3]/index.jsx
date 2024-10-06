@@ -13,14 +13,13 @@ import styles from "../../../../../styles/word.module.css";
 
 export default function Word3() {
   const router = useRouter();
-  const { episodeID, word1, word2, word3 } = router.query;
-  const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
-  const [colors, setColors] = useState([]); // カラー用のステート
+  const { episodeID, word1, word2, word3, color } = router.query;
+  const [keywords, setKeywords] = useState([]);
+  const [colors, setColors] = useState([]);
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
       try {
-        // 被験者IDに基づいて、指定された単語が含まれるすべてのドキュメントを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
@@ -31,13 +30,11 @@ export default function Word3() {
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
-        // フィールドを一つの配列にまとめる
         const allFieldsArray = [];
 
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
             if (value !== word1 && value !== word2 && value !== word3) {
               allFieldsArray.push({ key, value, episodeID: docID });
@@ -47,8 +44,6 @@ export default function Word3() {
 
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-
-        // ステートを更新
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -60,11 +55,9 @@ export default function Word3() {
 
     fetchDocumentsForWord1();
   }, [episodeID, word1, word2, word3]);
-
   useBackgroundColor();
-
   return (
-    <div>
+    <div style={{ minHeight: "100vh", padding: "20px" }}>
       <h3>
         選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]
       </h3>
@@ -74,7 +67,7 @@ export default function Word3() {
             <Link
               href={{
                 pathname: `/${item.episodeID}/${word1}/${word2}/${word3}/${item.value}`,
-                query: { color: colors[index] }, // 現在の背景色を次のページに引き継ぐ
+                query: { color: colors[index] }, // 次のページに背景色を引き継ぐ
               }}
             >
               <button
@@ -87,7 +80,12 @@ export default function Word3() {
           </ol>
         ))}
       </ul>
-      <Link href={`/${episodeID}/${word1}/${word2}`}>
+      <Link
+        href={{
+          pathname: `/${episodeID}/${word1}/${word2}`,
+          query: { color }, // 戻る際に背景色を引き継ぐ
+        }}
+      >
         <button>戻る</button>
       </Link>
     </div>

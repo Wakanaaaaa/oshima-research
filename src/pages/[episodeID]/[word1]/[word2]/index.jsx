@@ -13,7 +13,7 @@ import styles from "../../../../styles/word.module.css";
 
 export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1, word2 } = router.query;
+  const { episodeID, word1, word2, color } = router.query; // colorクエリパラメータを追加
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
 
@@ -30,13 +30,11 @@ export default function Word2() {
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
-        // フィールドを一つの配列にまとめる
         const allFieldsArray = [];
 
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
             if (value !== word1 && value !== word2) {
               allFieldsArray.push({ key, value, episodeID: docID });
@@ -46,8 +44,6 @@ export default function Word2() {
 
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-
-        // ステートを更新
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -73,7 +69,7 @@ export default function Word2() {
             <Link
               href={{
                 pathname: `/${item.episodeID}/${word1}/${word2}/${item.value}`,
-                query: { color: colors[index] },
+                query: { color: colors[index] }, // 現在の背景色を次のページに引き継ぐ
               }}
             >
               <button
@@ -86,7 +82,7 @@ export default function Word2() {
           </ol>
         ))}
       </ul>
-      <Link href={`/${episodeID}/${word1}`}>
+      <Link href={{ pathname: `/${episodeID}/${word1}`, query: { color } }}>
         <button>戻る</button>
       </Link>
     </div>
