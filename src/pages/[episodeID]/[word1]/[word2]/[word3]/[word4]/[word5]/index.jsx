@@ -75,18 +75,15 @@ export default function Word5() {
 
   return (
     <div>
-      <h3>
-        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
-        [ {word5}]
-      </h3>
-      <ul>
+      <ul className={styles.list}>
         {keywords.map((item, index) => (
-          <ol key={index}>
+          <li key={item.id || index} className={styles.listItem}>
             <Link
               href={{
                 pathname: `/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`,
                 query: { color: colors[index] },
               }}
+              passHref
             >
               <button
                 className={styles.button}
@@ -95,9 +92,13 @@ export default function Word5() {
                 {item.value}
               </button>
             </Link>
-          </ol>
+          </li>
         ))}
       </ul>
+      <h3>
+        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
+        [ {word5}]
+      </h3>
       <Link
         href={{
           pathname: `/${episodeID}/${word1}/${word2}/${word3}/${word4}`,

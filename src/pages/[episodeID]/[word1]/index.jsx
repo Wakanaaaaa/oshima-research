@@ -59,18 +59,19 @@ export default function Word1() {
   }, [episodeID, word1]);
 
   useBackgroundColor();
+  // handleBackButtonClick();
 
   return (
-    <div style={{ minHeight: "100vh", padding: "20px" }}>
-      <h3>選択した単語：[ {word1} ]</h3>
-      <ul>
+    <div>
+      <ul className={styles.list}>
         {keywords.map((item, index) => (
-          <ol key={index}>
+          <li key={item.id || index} className={styles.listItem}>
             <Link
               href={{
                 pathname: `/${item.episodeID}/${word1}/${item.value}`,
                 query: { color: colors[index] }, // 現在の背景色を次のページに引き継ぐ
               }}
+              passHref
             >
               <button
                 className={styles.button}
@@ -79,9 +80,10 @@ export default function Word1() {
                 {item.value}
               </button>
             </Link>
-          </ol>
+          </li>
         ))}
       </ul>
+      <h3>選択した単語：[ {word1} ]</h3>
       <Link href="/">
         <button>戻る</button>
       </Link>

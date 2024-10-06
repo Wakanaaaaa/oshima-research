@@ -1,7 +1,38 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* 画面の高さ全体を使用 */
+  margin: 0; /* マージンをリセット */
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap; /* 要素を折り返して2列に */
+  justify-content: space-around; /* 水平方向にスペースを分配 */
+  padding: 0;
+  list-style-type: none; /* リストの「・」を非表示 */
+  margin: 0;
+  width: 100%;
+}
+
+.listItem {
+  width: 45%; /* 幅を45%にして2列に並ぶように */
+  margin-bottom: 5px;
+  display: flex;
+  justify-content: center; /* ボタンを中央に配置 */
+}
+
 .button {
-  padding: 10px;
+  font-size: 1.0em;
+  padding: 35px;
   margin: 5px;
-  border-radius: 8px;
+  border-radius: 50px;
   border: 3px solid transparent;
   background: #fff;
+  width: 100%; /*ボタンをリストアイテムの幅に合わせる*/
+  box-sizing: border-box; /*パディングとボーダーを含めて幅を計算 */
+  white-space: nowrap;  /*単語が改行されないようにする */
+  overflow: hidden; /* 長い単語がボタン幅を超えた場合に隠れる */
+  text-overflow: ellipsis; /* 長すぎるテキストが省略されるようにする */
 }
