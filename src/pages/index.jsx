@@ -9,10 +9,10 @@ import { useRouter } from "next/router";
 export default function Word1() {
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); //枠のカラー
-
   const router = useRouter();
   const targetRefs = useRef([]);
   let initialDistance = 0;
+  let zoomedElement = null; // どの要素がズームされたかを追跡するための変数
 
   const getDistance = (touches) => {
     const [touch1, touch2] = touches;
@@ -38,17 +38,43 @@ export default function Word1() {
     };
 
     fetchAllDocuments();
+
+    // **画面高さをビューポートに合わせるコード**
+    const container = document.querySelector(`.${styles.container}`);
+
+    // 初回のビューポートの高さを設定
+    const viewportHeight = window.innerHeight;
+    container.style.height = `${viewportHeight}px`;
+
+    // リサイズ時に高さを再設定
+    const handleResize = () => {
+      container.style.height = `${window.innerHeight}px`;
+    };
+    window.addEventListener("resize", handleResize);
+
+    // コンポーネントがアンマウントされたときにリスナーを削除
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useEffect(() => {
     const handleTouchStart = (e) => {
       if (e.touches.length === 2) {
+        e.preventDefault();
         initialDistance = getDistance(e.touches);
+
+        // タッチした要素がどれか確認
+        targetRefs.current.forEach((ref) => {
+          if (ref && ref.contains(e.target)) {
+            zoomedElement = ref; // ズームする要素を保存
+          }
+        });
       }
     };
-
     const handleTouchMove = (e) => {
       if (e.touches.length === 2) {
+        e.preventDefault();
         const currentDistance = getDistance(e.touches);
         const zoomFactor = currentDistance / initialDistance;
 
@@ -58,36 +84,37 @@ export default function Word1() {
           // 現在の画面の幅を取得
           const viewportWidth = window.innerWidth;
 
-          // 各対象要素の座標を取得し、ログに出力
-          targetRefs.current.forEach((ref, index) => {
-            if (ref) {
-              const rect = ref.getBoundingClientRect();
-              const coordinates = {
-                top: rect.top,
-                left: rect.left,
-                width: rect.width,
-                height: rect.height,
-              };
+          // // 各対象要素の座標を取得し、ログに出力
+          // targetRefs.current.forEach((ref, index) => {
+          //   if (ref) {
+          //     const rect = ref.getBoundingClientRect();
+          //     const coordinates = {
+          //       top: rect.top,
+          //       left: rect.left,
+          //       width: rect.width,
+          //       height: rect.height,
+          //     };
 
-              console.log(`Element ${index} Coordinates:`, coordinates);
-            }
-          });
+          //     console.log(`Element ${index} Coordinates:`, coordinates);
+          //   }
+          // });
 
           // ページ遷移
-          router.push("/hoge/hoge"); // 遷移先のページに変更
+          if (zoomedElement !== null) {
+            router.push("/hoge/hoge"); // 遷移先のページに変更
+          }
         } else {
-          // ズーム効果を適用
-          targetRefs.current.forEach((ref) => {
-            if (ref) {
-              ref.style.transform = `scale(${zoomFactor})`;
-            }
-          });
+          if (zoomedElement !== null) {
+            zoomedElement.style.transform = `scale(${zoomFactor})`;
+          }
         }
       }
     };
 
-    document.addEventListener("touchstart", handleTouchStart);
-    document.addEventListener("touchmove", handleTouchMove);
+    document.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
 
     return () => {
       document.removeEventListener("touchstart", handleTouchStart);
@@ -102,29 +129,25 @@ export default function Word1() {
     }
   };
 
-    return (
-      <div className={styles.container}>
-        <ul className={styles.list}>
-          {keywords.map((item, index) => (
-            <li key={item.id || index} className={styles.listItem}>
-              <div
-                ref={addToRefs}
-                onClick={() => {
-                  // リンクの動作を実装
-                  window.location.href = `/${item.episodeID}/${item.value}?color=${colors[index]}`;
-                }}
-                style={{ cursor: 'pointer' }} // クリック可能であることを示すためにカーソルをポインタに変更
-              >
-                <button
-                  className={styles.button}
-                  style={{ borderColor: colors[index] }}
-                >
-                  {item.value}
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+  return (
+    <div className={styles.container}>
+      <ul className={styles.list}>
+        {keywords.map((item, index) => (
+          <li key={item.id || index} className={styles.listItem}>
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              ref={addToRefs}
+              onClick={() => {
+                // リンクの動作を実装
+                window.location.href = `/${item.episodeID}/${item.value}?color=${colors[index]}`;
+              }}
+            >
+              {item.value}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
