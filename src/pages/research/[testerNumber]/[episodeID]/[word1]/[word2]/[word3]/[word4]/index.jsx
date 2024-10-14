@@ -1,50 +1,45 @@
-import { useRouter } from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
-import { SUBJECT_ID } from "@/subjectID";
-import { shuffleArray } from "../../../../../../../firestoreUtils.jsx";
-import {
-  generateRandomColor,
-  useBackgroundColor,
-} from "../../../../../../../colorUtils.jsx";
-import styles from "../../../../../../../styles/word.module.css";
+import { shuffleArray } from "@/firestoreUtils.jsx";
+import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
+import styles from "../../../../../../../../styles/word.module.css";
+import { usePinchZoom } from "@/pages/usePinchZoom.jsx";
 
-export default function Word5() {
+export default function Word4() {
   const router = useRouter();
-  const { episodeID, word1, word2, word3, word4, word5, color } = router.query;
+  const { episodeID, word1, word2, word3, word4 } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
+  const { testerNumber } = router.query;
+  const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
       try {
-        // 被験者IDに基づいて、指定された単語が含まれるすべてのドキュメントを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
-          SUBJECT_ID,
+          testerNumber,
           "episodes"
         );
 
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
-        // フィールドを一つの配列にまとめる
         const allFieldsArray = [];
 
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
             if (
               value !== word1 &&
               value !== word2 &&
               value !== word3 &&
-              value !== word4 &&
-              value !== word5
+              value !== word4
             ) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
@@ -54,8 +49,8 @@ export default function Word5() {
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
 
-        // ステートを更新
         setKeywords(randomFields);
+
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
       } catch (error) {
@@ -64,46 +59,31 @@ export default function Word5() {
     };
 
     fetchDocumentsForWord1();
-  }, [episodeID, word1, word2, word3, word4, word5]);
+  }, [episodeID, word1, word2, word3, word4, testerNumber]);
 
   useBackgroundColor();
-
-  // useEffect(() => {
-  //   const backgroundColor = applyTransparency(color);
-  //   document.body.style.backgroundColor = backgroundColor;
-  // }, [color]);
 
   return (
     <div>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
-            <Link
-              href={{
-                pathname: `/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`,
-                query: { color: colors[index] },
-              }}
-              passHref
-            >
               <button
                 className={styles.button}
                 style={{ borderColor: colors[index] }}
+                id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${item.value}`}
+                ref={addToRefs}
               >
                 {item.value}
               </button>
-            </Link>
           </li>
         ))}
       </ul>
       <h3>
-        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
-        [ {word5}]
+        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ]
       </h3>
       <Link
-        href={{
-          pathname: `/${episodeID}/${word1}/${word2}/${word3}/${word4}`,
-          query: { color },
-        }}
+        href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}` }
       >
         <button>戻る</button>
       </Link>

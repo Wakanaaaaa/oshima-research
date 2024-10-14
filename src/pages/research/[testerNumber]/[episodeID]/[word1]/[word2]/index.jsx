@@ -1,50 +1,41 @@
-import Link from "next/link";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
-import { SUBJECT_ID } from "@/subjectID";
-import { shuffleArray } from "../../../../../../firestoreUtils.jsx";
-import {
-  generateRandomColor,
-  useBackgroundColor,
-} from "../../../../../../colorUtils.jsx";
+import { shuffleArray } from "@/firestoreUtils.jsx";
+import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import styles from "../../../../../../styles/word.module.css";
+import { usePinchZoom } from "@/pages/usePinchZoom.jsx";
 
-export default function Word4() {
+export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1, word2, word3, word4, color } = router.query;
+  const { episodeID, word1, word2 } = router.query;
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
+  const { testerNumber } = router.query;
+  const { addToRefs } = usePinchZoom(); // カスタムフックの利用
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
       try {
-        // 被験者IDに基づいて、指定された単語が含まれるすべてのドキュメントを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
-          SUBJECT_ID,
+          testerNumber,
           "episodes"
         );
 
         const q = query(subcollectionRef, where("__name__", "==", episodeID));
         const subcollectionSnapshot = await getDocs(q);
 
-        // フィールドを一つの配列にまとめる
         const allFieldsArray = [];
 
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
-            if (
-              value !== word1 &&
-              value !== word2 &&
-              value !== word3 &&
-              value !== word4
-            ) {
+            if (value !== word1 && value !== word2) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
@@ -52,8 +43,6 @@ export default function Word4() {
 
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-
-        // ステートを更新
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -64,7 +53,7 @@ export default function Word4() {
     };
 
     fetchDocumentsForWord1();
-  }, [episodeID, word1, word2, word3, word4]);
+  }, [episodeID, word1, word2, testerNumber]);
 
   useBackgroundColor();
 
@@ -73,32 +62,23 @@ export default function Word4() {
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
-            <Link
-              href={{
-                pathname: `/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${item.value}`,
-                query: { color: colors[index] },
-              }}
-              passHref
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${item.value}`}
+              ref={addToRefs}
             >
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-              >
-                {item.value}
-              </button>
-            </Link>
+              {item.value}
+            </button>
           </li>
         ))}
       </ul>
       <h3>
-        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ]
+        選択した単語：[ {word1} ]---[ {word2} ]
       </h3>
       <Link
-        href={{
-          pathname: `/${episodeID}/${word1}/${word2}/${word3}`,
-          query: { color },
-        }}
-      >
+        href={`/research/${testerNumber}/${episodeID}/${word1}` }
+        >
         <button>戻る</button>
       </Link>
     </div>

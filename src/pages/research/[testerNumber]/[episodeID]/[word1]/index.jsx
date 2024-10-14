@@ -3,19 +3,18 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
-import { SUBJECT_ID } from "@/subjectID";
-import { shuffleArray } from "../../../firestoreUtils.jsx";
-import {
-  generateRandomColor,
-  useBackgroundColor,
-} from "../../../colorUtils.jsx";
-import styles from "../../../styles/word.module.css";
+import { shuffleArray } from "@/firestoreUtils.jsx";
+import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
+import styles from "../../../../../styles/word.module.css";
+import { usePinchZoom } from "@/pages/usePinchZoom.jsx";
 
 export default function Word1() {
   const router = useRouter();
-  const { episodeID, word1 } = router.query; // クエリからword1とcolorを取得
-  const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
-  const [colors, setColors] = useState([]); // カラー用のステート
+  const { episodeID, word1 } = router.query;
+  const [keywords, setKeywords] = useState([]);
+  const [colors, setColors] = useState([]);
+  const { testerNumber } = router.query;
+  const { addToRefs } = usePinchZoom(testerNumber);
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -24,7 +23,7 @@ export default function Word1() {
         const subcollectionRef = collection(
           db,
           "4Wwords",
-          SUBJECT_ID,
+          testerNumber,
           "episodes"
         );
 
@@ -56,35 +55,36 @@ export default function Word1() {
     };
 
     fetchDocumentsForWord1();
-  }, [episodeID, word1]);
+  }, [episodeID, word1, testerNumber]);
 
   useBackgroundColor();
-  // handleBackButtonClick();
+
+  useEffect(() => {
+    if (!testerNumber) {
+      console.error("Tester Number is undefined.");
+    } else {
+      console.log("Tester Number:", testerNumber);
+    }
+  }, [testerNumber]);
 
   return (
-    <div>
+    <div className={styles.container}>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
-            <Link
-              href={{
-                pathname: `/${item.episodeID}/${word1}/${item.value}`,
-                query: { color: colors[index] }, // 現在の背景色を次のページに引き継ぐ
-              }}
-              passHref
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${item.value}`}
+              ref={addToRefs}
             >
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-              >
-                {item.value}
-              </button>
-            </Link>
+              {item.value}
+            </button>
           </li>
         ))}
       </ul>
       <h3>選択した単語：[ {word1} ]</h3>
-      <Link href="/">
+      <Link href={`/research/${testerNumber}`}>
         <button>戻る</button>
       </Link>
     </div>

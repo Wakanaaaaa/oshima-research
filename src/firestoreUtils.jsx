@@ -1,10 +1,9 @@
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
-import { SUBJECT_ID } from "@/subjectID";
 
 // Firestoreからデータを取得する共通関数
-export const fetchFirestoreData = async () => {
-  const subcollectionRef = collection(db, "4Wwords", SUBJECT_ID, "episodes");
+export const fetchFirestoreData = async (testerNumber) => {
+  const subcollectionRef = collection(db, "4Wwords", testerNumber, "episodes");
   const subcollectionSnapshot = await getDocs(subcollectionRef);
   const allFieldsArray = [];
   subcollectionSnapshot.forEach((doc) => {
