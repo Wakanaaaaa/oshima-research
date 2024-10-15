@@ -68,7 +68,7 @@ export default function Word1() {
   }, [testerNumber]);
 
   return (
-    <div className={styles.container}>
+    <div>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
