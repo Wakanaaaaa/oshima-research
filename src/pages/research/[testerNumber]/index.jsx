@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import styles from "../../../styles/word.module.css";
 import { fetchFirestoreData, shuffleArray } from "../../../firestoreUtils.jsx";
 import { generateRandomColor } from "../../../colorUtils.jsx";
-import { usePinchZoom } from "../../usePinchZoom";
+import { usePinchZoom } from "../../../hooks/usePinchZoom";
 
 export default function Word1() {
   const router = useRouter();

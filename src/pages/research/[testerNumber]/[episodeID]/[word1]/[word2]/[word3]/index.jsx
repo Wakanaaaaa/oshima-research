@@ -6,7 +6,7 @@ import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import styles from "../../../../../../../styles/word.module.css";
-import { usePinchZoom } from "@/pages/usePinchZoom.jsx";
+import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 
 export default function Word3() {
   const router = useRouter();
