@@ -15,6 +15,7 @@ export default function Word1() {
   const [colors, setColors] = useState([]);
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
+  
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -37,14 +38,19 @@ export default function Word1() {
           const docID = doc.id;
           // すべての関連ワードをリストに追加
           for (const [key, value] of Object.entries(data)) {
-            if (value !== word1) {
+            if (key !== "do" && value !== word1) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
         });
+        console.log("alllFieldsArray:", allFieldsArray)
 
         const shuffledArray = shuffleArray(allFieldsArray);
+        console.log("shuffledArray:", shuffledArray)
+
         const randomFields = shuffledArray.slice(0, 6);
+        console.log("randomFields:", randomFields)
+
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -58,7 +64,6 @@ export default function Word1() {
   }, [episodeID, word1, testerNumber]);
 
   useBackgroundColor();
-
   useEffect(() => {
     if (!testerNumber) {
       console.error("Tester Number is undefined.");
@@ -66,9 +71,11 @@ export default function Word1() {
       console.log("Tester Number:", testerNumber);
     }
   }, [testerNumber]);
-
   return (
     <div>
+      {/* 選択した単語の表示をボタンリストの上に移動 */}
+      <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
+      
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
@@ -83,9 +90,10 @@ export default function Word1() {
           </li>
         ))}
       </ul>
-      <h3>選択した単語：[ {word1} ]</h3>
+      
+      {/* 戻るボタン */}
       <Link href={`/research/${testerNumber}`}>
-        <button>戻る</button>
+        <button className={styles.backButton}>戻る</button>
       </Link>
     </div>
   );

@@ -35,7 +35,12 @@ export default function Word3() {
           const data = doc.data();
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
-            if (value !== word1 && value !== word2 && value !== word3) {
+            if (
+              key !== "do" &&
+              value !== word1 &&
+              value !== word2 &&
+              value !== word3
+            ) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
@@ -62,24 +67,22 @@ export default function Word3() {
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index} className={styles.listItem}>
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-                id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${item.value}`}
-                ref={addToRefs}
-              >
-                {item.value}
-              </button>
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${item.value}`}
+              ref={addToRefs}
+            >
+              {item.value}
+            </button>
           </li>
         ))}
       </ul>
       <h3>
         選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]
       </h3>
-      <Link
-        href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}` }
-      >
-        <button>戻る</button>
+      <Link href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}`}>
+        <button className={styles.backButton}>戻る</button>
       </Link>
     </div>
   );

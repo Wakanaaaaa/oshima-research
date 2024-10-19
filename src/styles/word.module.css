@@ -1,38 +1,57 @@
 .container {
+  position: relative; /* 子要素のposition: absoluteを親要素基準にする */
+  width: 100%;
+  height: 100vh; /* 画面全体を使用するための高さ */
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: hidden; /* 子要素がはみ出さないようにする */
 }
 
 .list {
-  display: flex;
-  flex-wrap: wrap; /* 要素を折り返して2列に */
-  justify-content: space-around; /* 水平方向にスペースを分配 */
+  position: relative; /* 子要素の配置を相対的にする */
+  width: 100%;
+  height: 100%; /* 親要素の高さを基準にする */
   padding: 0;
   list-style-type: none; /* リストの「・」を非表示 */
   margin: 0;
-  width: 100%;
+  padding-bottom: 60px; /* 戻るボタンのためのスペース確保 */
 }
-
+/* 
 .listItem {
-  width: 45%; /* 幅を45%にして2列に並ぶように */
-  margin-bottom: 5px;
-  display: flex;
-  justify-content: center; /* ボタンを中央に配置 */
+  position: absolute; 
+  width: 45%; 
+} */
+
+.selectedWord {
+  text-align: center; /* 中央に表示 */
+  margin-bottom: 20px; /* ボタンリストとの間に余白を追加 */
+  font-size: 1.5em; /* フォントサイズを少し大きくする */
 }
 
 .button {
-  font-size: 1.0em;
-  padding: 15px;
+  font-size: 1.5em; /* フォントサイズを大きくする */
+  padding: 20px; /* ボタン内の余白を増やす */
   margin: 5px;
   border-radius: 50px;
   border: 3px solid transparent;
   background: #fff;
-  width: 90%; /* ボタンの幅をリストアイテムに対して大きくする */
-  height: 100px; /* ボタン自体の高さを大きくする */
-  box-sizing: border-box; /*パディングとボーダーを含めて幅を計算 */
-  white-space: nowrap;  /*単語が改行されないようにする */
-  overflow: hidden; /*長い単語がボタン幅を超えた場合に隠れる*/
-  text-overflow: ellipsis; /*長すぎるテキストが省略されるようにする*/
+  width: 95%; /* 幅を広げる */
+  height: 100px; /* 高さを大きくする */
+  box-sizing: border-box;
+  white-space: nowrap; /* 改行を防ぐ */
+  overflow: hidden; /* はみ出した文字を隠す */
+  text-overflow: ellipsis; /* はみ出した文字に「...」を表示 */
+  display: inline-block; /* inline-blockを指定することで、widthが効くようにする */
+}
+
+
+.backButton {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f1f1f1;
 }

@@ -26,11 +26,11 @@ export default function Home() {
       console.error("Tester Number is not provided.");
     }
   };
-  
 
   const handleInputChange = (e) => {
     setTesterNumber(e.target.value); // 入力された値を更新
   };
+
 
   return (
     <main className={styles.main}>

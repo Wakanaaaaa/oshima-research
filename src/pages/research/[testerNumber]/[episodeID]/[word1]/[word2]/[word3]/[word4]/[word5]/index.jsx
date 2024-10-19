@@ -36,6 +36,7 @@ export default function Word5() {
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
             if (
+              key !== "do" && 
               value !== word1 &&
               value !== word2 &&
               value !== word3 &&
@@ -86,7 +87,7 @@ export default function Word5() {
       <Link
         href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}/${word4}` }
       >
-        <button>戻る</button>
+        <button className={styles.backButton}>戻る</button>
       </Link>
     </div>
   );

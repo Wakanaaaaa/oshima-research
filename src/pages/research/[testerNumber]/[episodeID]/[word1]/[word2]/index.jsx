@@ -35,7 +35,7 @@ export default function Word2() {
           const data = doc.data();
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
-            if (value !== word1 && value !== word2) {
+            if (key !== "do" && value !== word1 && value !== word2) {
               allFieldsArray.push({ key, value, episodeID: docID });
             }
           }
@@ -76,10 +76,8 @@ export default function Word2() {
       <h3>
         選択した単語：[ {word1} ]---[ {word2} ]
       </h3>
-      <Link
-        href={`/research/${testerNumber}/${episodeID}/${word1}` }
-        >
-        <button>戻る</button>
+      <Link href={`/research/${testerNumber}/${episodeID}/${word1}`}>
+        <button className={styles.backButton}>戻る</button>
       </Link>
     </div>
   );
