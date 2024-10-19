@@ -36,7 +36,7 @@ export default function Word5() {
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
             if (
-              key !== "do" && 
+              key !== "do" &&
               value !== word1 &&
               value !== word2 &&
               value !== word3 &&
@@ -66,26 +66,27 @@ export default function Word5() {
 
   return (
     <div>
-      <ul className={styles.list}>
-        {keywords.map((item, index) => (
-          <li key={item.id || index} className={styles.listItem}>
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-                id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`}
-                ref={addToRefs}
-              >
-                {item.value}
-              </button>
-          </li>
-        ))}
-      </ul>
-      <h3>
+      <h3 className={styles.selectedWord}>
         選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
         [ {word5} ]
       </h3>
+      <ul className={styles.list}>
+        {keywords.map((item, index) => (
+          <li key={item.id || index}>
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`}
+              ref={addToRefs}
+            >
+              {item.value}
+            </button>
+          </li>
+        ))}
+      </ul>
+
       <Link
-        href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}/${word4}` }
+        href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}/${word4}`}
       >
         <button className={styles.backButton}>戻る</button>
       </Link>

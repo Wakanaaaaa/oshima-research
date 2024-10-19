@@ -43,14 +43,8 @@ export default function Word1() {
             }
           }
         });
-        console.log("alllFieldsArray:", allFieldsArray)
-
         const shuffledArray = shuffleArray(allFieldsArray);
-        console.log("shuffledArray:", shuffledArray)
-
         const randomFields = shuffledArray.slice(0, 6);
-        console.log("randomFields:", randomFields)
-
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -71,6 +65,7 @@ export default function Word1() {
       console.log("Tester Number:", testerNumber);
     }
   }, [testerNumber]);
+
   return (
     <div>
       {/* 選択した単語の表示をボタンリストの上に移動 */}
@@ -78,7 +73,7 @@ export default function Word1() {
       
       <ul className={styles.list}>
         {keywords.map((item, index) => (
-          <li key={item.id || index} className={styles.listItem}>
+          <li key={item.id || index}>
             <button
               className={styles.button}
               style={{ borderColor: colors[index] }}

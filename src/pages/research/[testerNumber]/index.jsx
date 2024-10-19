@@ -99,7 +99,7 @@ export default function Word1() {
           return (
             <li
               key={item.id || index}
-              className={styles.listItem}
+              // className={styles.listItem}
               style={{ ...randomPosition }} // ランダムな位置を設定
             >
               <button

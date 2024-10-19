@@ -1,5 +1,6 @@
 .container {
   position: relative; /* 子要素のposition: absoluteを親要素基準にする */
+  padding-top: 0; /* 必要に応じて調整 */
   width: 100%;
   height: 100vh; /* 画面全体を使用するための高さ */
   display: flex;
@@ -15,13 +16,13 @@
   padding: 0;
   list-style-type: none; /* リストの「・」を非表示 */
   margin: 0;
+  padding-top: 50px;
   padding-bottom: 60px; /* 戻るボタンのためのスペース確保 */
 }
-/* 
+
 .listItem {
-  position: absolute; 
-  width: 45%; 
-} */
+  position: static; 
+}
 
 .selectedWord {
   text-align: center; /* 中央に表示 */
@@ -44,7 +45,6 @@
   text-overflow: ellipsis; /* はみ出した文字に「...」を表示 */
   display: inline-block; /* inline-blockを指定することで、widthが効くようにする */
 }
-
 
 .backButton {
   position: fixed;
