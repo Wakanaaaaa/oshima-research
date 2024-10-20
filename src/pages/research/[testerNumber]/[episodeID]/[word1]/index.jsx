@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
@@ -15,7 +15,6 @@ export default function Word1() {
   const [colors, setColors] = useState([]);
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
-  
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -28,25 +27,42 @@ export default function Word1() {
           "episodes"
         );
 
-        const q = query(subcollectionRef, where("__name__", "==", episodeID));
-        const subcollectionSnapshot = await getDocs(q);
+        // すべてのエピソードを取得
+        const subcollectionSnapshot = await getDocs(subcollectionRef);
 
         const allFieldsArray = [];
+        const seenValues = new Set();  // 重複を防ぐためのセット
 
+        // 各エピソードを手動でフィルタリングし、word1を含むエピソードを見つける
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          // すべての関連ワードをリストに追加
+
+          // ドキュメント内のフィールドをチェックし、word1が含まれているか確認
           for (const [key, value] of Object.entries(data)) {
-            if (key !== "do" && value !== word1) {
-              allFieldsArray.push({ key, value, episodeID: docID });
+            if (value === word1) {
+              // word1を含むエピソードの場合、そのエピソード内の他のフィールドを追加
+              for (const [innerKey, innerValue] of Object.entries(data)) {
+                if (innerKey !== "do" && innerValue !== word1 && !seenValues.has(innerValue)) {
+                  allFieldsArray.push({
+                    key: innerKey,
+                    value: innerValue,
+                    episodeID: docID,
+                  });
+                  seenValues.add(innerValue);  // 単語を追加したらセットに登録
+                }
+              }
+              break; // word1を含むエピソードが見つかったので次のドキュメントへ
             }
           }
         });
+
+        // 単語リストをランダムにシャッフルし、6つ取得
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
         setKeywords(randomFields);
 
+        // ランダムな色を生成
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
       } catch (error) {
@@ -54,26 +70,21 @@ export default function Word1() {
       }
     };
 
-    fetchDocumentsForWord1();
+    if (word1 && testerNumber) {
+      fetchDocumentsForWord1();
+    }
   }, [episodeID, word1, testerNumber]);
 
   useBackgroundColor();
-  useEffect(() => {
-    if (!testerNumber) {
-      console.error("Tester Number is undefined.");
-    } else {
-      console.log("Tester Number:", testerNumber);
-    }
-  }, [testerNumber]);
 
   return (
     <div>
       {/* 選択した単語の表示をボタンリストの上に移動 */}
       <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
-      
+
       <ul className={styles.list}>
         {keywords.map((item, index) => (
-          <li key={item.id || index}>
+          <li key={index}>
             <button
               className={styles.button}
               style={{ borderColor: colors[index] }}
@@ -85,7 +96,7 @@ export default function Word1() {
           </li>
         ))}
       </ul>
-      
+
       {/* 戻るボタン */}
       <Link href={`/research/${testerNumber}`}>
         <button className={styles.backButton}>戻る</button>

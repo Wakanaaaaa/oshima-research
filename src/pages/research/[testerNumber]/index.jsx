@@ -27,18 +27,22 @@ export default function Word1() {
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
         const allFieldsArray = [];
-        const uniqueValues = new Set(); // 重複を排除するためのセット
+        const wordCount = {}; // 単語ごとの出現回数を追跡
 
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
-            if (key !== "do" && !uniqueValues.has(value)) {
-              allFieldsArray.push({ key, value, episodeID: docID });
-              uniqueValues.add(value); // 値をセットに追加
+            if (key !== "do") {
+              // 単語の初出現の場合のみ追加
+              if (!wordCount[value]) {
+                allFieldsArray.push({ key, value, episodeID: docID });
+                wordCount[value] = 1; // 出現を記録
+              }
             }
           }
         });
+
 
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
@@ -51,9 +55,9 @@ export default function Word1() {
       }
     };
 
-    if(testerNumber){
-    fetchAllDocuments();
-  }
+    if (testerNumber) {
+      fetchAllDocuments();
+    }
   }, [testerNumber]);
 
   const checkOverlap = (newPosition, width, height) => {
@@ -70,7 +74,6 @@ export default function Word1() {
     }
     return false; // オーバーラップしていない
   };
-  
 
   const getRandomPosition = (width, height) => {
     let randomTop, randomLeft;
@@ -79,7 +82,7 @@ export default function Word1() {
 
     do {
       randomTop = Math.random() * (90 - height); // 画面の範囲内に収める
-      randomLeft = Math.random() * (90 - width); // 画面の範囲内に収める      
+      randomLeft = Math.random() * (90 - width); // 画面の範囲内に収める
       newPosition = { top: randomTop, left: randomLeft };
       overlap = checkOverlap(newPosition, width, height);
     } while (overlap);

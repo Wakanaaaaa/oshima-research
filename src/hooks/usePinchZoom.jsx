@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 // カスタムフック
 export const usePinchZoom = (testerNumber) => {
   const targetRefs = useRef([]);
-  let initialDistance = 0;
-  let zoomedElement = null;
+  const initialDistanceRef = useRef(0); // useRefで初期化
+  const zoomedElementRef = useRef(null); // useRefで初期化
+  const targetIDRef = useRef("/null/null"); // useRefで初期化
   const router = useRouter();
-  let targetID = "/null/null";
 
   const getDistance = (touches) => {
     const [touch1, touch2] = touches;
@@ -20,14 +20,14 @@ export const usePinchZoom = (testerNumber) => {
     const handleTouchStart = (e) => {
       if (e.touches.length === 2) {
         e.preventDefault();
-        initialDistance = getDistance(e.touches);
+        initialDistanceRef.current = getDistance(e.touches); // useRefのcurrentプロパティに保存
 
         targetRefs.current.forEach((ref) => {
           if (ref && ref.contains(e.target)) {
-            zoomedElement = ref;
-            targetID = e.target.id; // id を取得
+            zoomedElementRef.current = ref; // useRefで管理
+            targetIDRef.current = e.target.id; // useRefで管理
           }
-          console.log("targetID:", targetID);
+          console.log("targetID:", targetIDRef.current);
         });
       }
     };
@@ -36,14 +36,14 @@ export const usePinchZoom = (testerNumber) => {
       if (e.touches.length === 2) {
         e.preventDefault();
         const currentDistance = getDistance(e.touches);
-        const zoomFactor = currentDistance / initialDistance;
+        const zoomFactor = currentDistance / initialDistanceRef.current;
 
-        if (zoomedElement !== null) {
+        if (zoomedElementRef.current !== null) {
           if (zoomFactor > 1.0) {
-            zoomedElement.style.transform = `scale(${zoomFactor})`;
+            zoomedElementRef.current.style.transform = `scale(${zoomFactor})`;
           }
           if (zoomFactor > 2.0) {
-            const fullPath = `/${targetID}`; // 引数を使用
+            const fullPath = `/${targetIDRef.current}`; // useRefで管理
             router.push(fullPath);
           }
         }
