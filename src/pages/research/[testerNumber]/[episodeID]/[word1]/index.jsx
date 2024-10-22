@@ -31,7 +31,7 @@ export default function Word1() {
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
         const allFieldsArray = [];
-        const seenValues = new Set();  // 重複を防ぐためのセット
+        const seenValues = new Set(); // 重複を防ぐためのセット
 
         // 各エピソードを手動でフィルタリングし、word1を含むエピソードを見つける
         subcollectionSnapshot.forEach((doc) => {
@@ -43,13 +43,17 @@ export default function Word1() {
             if (value === word1) {
               // word1を含むエピソードの場合、そのエピソード内の他のフィールドを追加
               for (const [innerKey, innerValue] of Object.entries(data)) {
-                if (innerKey !== "do" && innerValue !== word1 && !seenValues.has(innerValue)) {
+                if (
+                  innerKey !== "do" &&
+                  innerValue !== word1 &&
+                  !seenValues.has(innerValue)
+                ) {
                   allFieldsArray.push({
                     key: innerKey,
                     value: innerValue,
                     episodeID: docID,
                   });
-                  seenValues.add(innerValue);  // 単語を追加したらセットに登録
+                  seenValues.add(innerValue); // 単語を追加したらセットに登録
                 }
               }
               break; // word1を含むエピソードが見つかったので次のドキュメントへ
@@ -79,7 +83,6 @@ export default function Word1() {
 
   return (
     <div>
-      {/* 選択した単語の表示をボタンリストの上に移動 */}
       <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
 
       <ul className={styles.list}>

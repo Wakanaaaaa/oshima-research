@@ -14,7 +14,7 @@ export default function Word1() {
   const [colors, setColors] = useState([]);
   const { addToRefs } = usePinchZoom(testerNumber);
 
-  const positions = useRef([]); // 配置された要素の位置を保存する
+  // const positions = useRef([]); // 配置された要素の位置を保存する
 
   useEffect(() => {
     const fetchAllDocuments = async () => {
@@ -43,7 +43,6 @@ export default function Word1() {
           }
         });
 
-
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
         setKeywords(randomFields);
@@ -60,50 +59,51 @@ export default function Word1() {
     }
   }, [testerNumber]);
 
-  const checkOverlap = (newPosition, width, height) => {
-    for (let pos of positions.current) {
-      const overlapX =
-        newPosition.left < pos.left + pos.width &&
-        newPosition.left + width > pos.left;
-      const overlapY =
-        newPosition.top < pos.top + pos.height &&
-        newPosition.top + height > pos.top;
-      if (overlapX && overlapY) {
-        return true; // オーバーラップしている
-      }
-    }
-    return false; // オーバーラップしていない
-  };
+  // const checkOverlap = (newPosition, width, height) => {
+  //   for (let pos of positions.current) {
+  //     const overlapX =
+  //       newPosition.left < pos.left + pos.width &&
+  //       newPosition.left + width > pos.left;
+  //     const overlapY =
+  //       newPosition.top < pos.top + pos.height &&
+  //       newPosition.top + height > pos.top;
+  //     if (overlapX && overlapY) {
+  //       return true; // オーバーラップしている
+  //     }
+  //   }
+  //   return false; // オーバーラップしていない
+  // };
 
-  const getRandomPosition = (width, height) => {
-    let randomTop, randomLeft;
-    let newPosition;
-    let overlap;
+  // const getRandomPosition = (width, height) => {
+  //   let randomTop, randomLeft;
+  //   let newPosition;
+  //   let overlap;
 
-    do {
-      randomTop = Math.random() * (90 - height); // 画面の範囲内に収める
-      randomLeft = Math.random() * (90 - width); // 画面の範囲内に収める
-      newPosition = { top: randomTop, left: randomLeft };
-      overlap = checkOverlap(newPosition, width, height);
-    } while (overlap);
+  //   do {
+  //     randomTop = Math.random() * (90 - height); // 画面の範囲内に収める
+  //     randomLeft = Math.random() * (90 - width); // 画面の範囲内に収める
+  //     newPosition = { top: randomTop, left: randomLeft };
+  //     overlap = checkOverlap(newPosition, width, height);
+  //   } while (overlap);
 
-    positions.current.push({ ...newPosition, width, height }); // 新しい位置を保存
-    return { top: `${randomTop}%`, left: `${randomLeft}%` };
-  };
+  //   positions.current.push({ ...newPosition, width, height }); // 新しい位置を保存
+  //   return { top: `${randomTop}%`, left: `${randomLeft}%` };
+  // };
 
   return (
     <div className={styles.container}>
+      <br />
       <ul className={styles.list}>
         {keywords.map((item, index) => {
-          const buttonWidth = 20; // ボタンの幅（%で想定）
-          const buttonHeight = 10; // ボタンの高さ（%で想定）
-          const randomPosition = getRandomPosition(buttonWidth, buttonHeight); // ランダム位置を生成
+          // const buttonWidth = 20; // ボタンの幅（%で想定）
+          // const buttonHeight = 10; // ボタンの高さ（%で想定）
+          // const randomPosition = getRandomPosition(buttonWidth, buttonHeight); // ランダム位置を生成
 
           return (
             <li
               key={item.id || index}
               // className={styles.listItem}
-              style={{ ...randomPosition }} // ランダムな位置を設定
+              // style={{ ...randomPosition }} // ランダムな位置を設定
             >
               <button
                 className={styles.button}

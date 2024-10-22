@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
@@ -19,24 +19,43 @@ export default function Word2() {
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
       try {
+        // 全エピソードを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
           testerNumber,
           "episodes"
         );
-
-        const q = query(subcollectionRef, where("__name__", "==", episodeID));
-        const subcollectionSnapshot = await getDocs(q);
+        const subcollectionSnapshot = await getDocs(subcollectionRef);
 
         const allFieldsArray = [];
+        const seenValues = new Set(); // 重複を防ぐためのセット
 
+        // 全エピソードをチェック
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          for (const [key, value] of Object.entries(data)) {
-            if (key !== "do" && value !== word1 && value !== word2) {
-              allFieldsArray.push({ key, value, episodeID: docID });
+
+          // word1とword2の両方がドキュメント内に存在するか確認
+          const containsWord1 = Object.values(data).includes(word1);
+          const containsWord2 = Object.values(data).includes(word2);
+
+          if (containsWord1 && containsWord2) {
+            // word1, word2以外の単語をリストに追加
+            for (const [key, value] of Object.entries(data)) {
+              if (
+                key !== "do" &&
+                value !== word1 &&
+                value !== word2 &&
+                !seenValues.has(value)
+              ) {
+                allFieldsArray.push({
+                  key,
+                  value,
+                  episodeID: docID,
+                });
+                seenValues.add(value); // 重複を防ぐためにセットに登録
+              }
             }
           }
         });
