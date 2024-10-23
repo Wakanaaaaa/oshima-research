@@ -33,33 +33,40 @@ export default function Word1() {
         const allFieldsArray = [];
         const seenValues = new Set(); // 重複を防ぐためのセット
 
-        // 各エピソードを手動でフィルタリングし、word1を含むエピソードを見つける
-        subcollectionSnapshot.forEach((doc) => {
-          const data = doc.data();
-          const docID = doc.id;
+       // 各エピソードをチェック
+       subcollectionSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const docID = doc.id;
 
-          // ドキュメント内のフィールドをチェックし、word1が含まれているか確認
+        // word1を含むエピソードかどうか確認
+        let hasWord1 = false;
+        for (const [key, value] of Object.entries(data)) {
+          if (value === word1) {
+            hasWord1 = true;
+            break; // word1が見つかったら終了
+          }
+        }
+
+        // word1を含む場合、1つの他のフィールドを抽出
+        if (hasWord1) {
           for (const [key, value] of Object.entries(data)) {
-            if (value === word1) {
-              // word1を含むエピソードの場合、そのエピソード内の他のフィールドを追加
-              for (const [innerKey, innerValue] of Object.entries(data)) {
-                if (
-                  innerKey !== "do" &&
-                  innerValue !== word1 &&
-                  !seenValues.has(innerValue)
-                ) {
-                  allFieldsArray.push({
-                    key: innerKey,
-                    value: innerValue,
-                    episodeID: docID,
-                  });
-                  seenValues.add(innerValue); // 単語を追加したらセットに登録
-                }
-              }
-              break; // word1を含むエピソードが見つかったので次のドキュメントへ
+            if (
+              key !== "do" && // "do" 以外
+              value !== word1 && // word1 以外
+              !seenValues.has(value) // 重複を避ける
+            ) {
+              allFieldsArray.push({
+                key: key,
+                value: value,
+                episodeID: docID,
+              });
+              seenValues.add(value); // 一度追加したらセットに登録
+              break; // 1つフィールドを見つけたら次のエピソードへ
             }
           }
-        });
+        }
+      });
+
 
         // 単語リストをランダムにシャッフルし、6つ取得
         const shuffledArray = shuffleArray(allFieldsArray);

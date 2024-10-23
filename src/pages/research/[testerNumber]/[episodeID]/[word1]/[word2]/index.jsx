@@ -41,7 +41,6 @@ export default function Word2() {
           const containsWord2 = Object.values(data).includes(word2);
 
           if (containsWord1 && containsWord2) {
-            // word1, word2以外の単語をリストに追加
             for (const [key, value] of Object.entries(data)) {
               if (
                 key !== "do" &&
@@ -55,6 +54,7 @@ export default function Word2() {
                   episodeID: docID,
                 });
                 seenValues.add(value); // 重複を防ぐためにセットに登録
+                break; // 一つだけ追加してループを抜ける
               }
             }
           }

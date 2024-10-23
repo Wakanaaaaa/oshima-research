@@ -65,6 +65,7 @@ export default function Word5() {
                   episodeID: docID,
                 });
                 seenValues.add(value); // 重複を防ぐためにセットに登録
+                break;
               }
             }
           }
