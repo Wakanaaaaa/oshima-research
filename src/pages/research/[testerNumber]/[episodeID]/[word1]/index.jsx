@@ -42,7 +42,7 @@ export default function Word2() {
                 value: data.where,
                 episodeID: docID,
               });
-              seenValues.add(data.where); //
+              seenValues.add(data.where);
               break; // word1を含むエピソードが見つかったので次のドキュメントへ
             }
           }
