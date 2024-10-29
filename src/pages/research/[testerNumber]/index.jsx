@@ -1,23 +1,23 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { shuffleArray } from "@/firestoreUtils.jsx";
-import { generateRandomColor } from "@/colorUtils.jsx";
-import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
-import { collection, getDocs } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
+import { shuffleArray } from "@/firestoreUtils.jsx";
+import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import styles from "../../../styles/word.module.css";
+import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 
 export default function Word1() {
   const router = useRouter();
-  const { testerNumber } = router.query;
-  const [keywords, setKeywords] = useState([]);
+  // const { episodeID, word1 } = router.query;
+  // const [keywords, setKeywords] = useState([]);
+  const [whenKeywords, setWhenKeywords] = useState([]);
   const [colors, setColors] = useState([]);
+  const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
 
-  const positions = useRef([]); // 配置された要素の位置を保存する
-
   useEffect(() => {
-    const fetchAllDocuments = async () => {
+    const fetchWhenDocuments = async () => {
       try {
         const subcollectionRef = collection(
           db,
@@ -26,28 +26,33 @@ export default function Word1() {
           "episodes"
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
-        const allFieldsArray = [];
-        const wordCount = {}; // 単語ごとの出現回数を追跡
+        const whenFieldsArray = [];
+        const seenValues = new Set(); // 重複を防ぐためのセット
 
+        // 各エピソードを手動でフィルタリングし、word1を含むエピソードを見つける
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          for (const [key, value] of Object.entries(data)) {
-            if (key !== "do") {
-              // 単語の初出現の場合のみ追加
-              if (!wordCount[value]) {
-                allFieldsArray.push({ key, value, episodeID: docID });
-                wordCount[value] = 1; // 出現を記録
-              }
-            }
+
+          // "when" フィールドが存在し、重複していない場合のみ追加
+          if (data.when && !seenValues.has(data.when)) {
+            whenFieldsArray.push({
+              value: data.when,
+              episodeID: docID,
+            });
+            seenValues.add(data.when); // 重複を防ぐため、セットに追加
           }
         });
 
+        setWhenKeywords(whenFieldsArray);
+        console.log("setWhenKeywords:", whenFieldsArray);
 
-        const shuffledArray = shuffleArray(allFieldsArray);
+        // 単語リストをランダムにシャッフルし、6つ取得
+        const shuffledArray = shuffleArray(whenFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
         setKeywords(randomFields);
 
+        // ランダムな色を生成
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
       } catch (error) {
@@ -56,54 +61,26 @@ export default function Word1() {
     };
 
     if (testerNumber) {
-      fetchAllDocuments();
+      fetchWhenDocuments();
     }
   }, [testerNumber]);
 
-  const checkOverlap = (newPosition, width, height) => {
-    for (let pos of positions.current) {
-      const overlapX =
-        newPosition.left < pos.left + pos.width &&
-        newPosition.left + width > pos.left;
-      const overlapY =
-        newPosition.top < pos.top + pos.height &&
-        newPosition.top + height > pos.top;
-      if (overlapX && overlapY) {
-        return true; // オーバーラップしている
-      }
-    }
-    return false; // オーバーラップしていない
-  };
-
-  const getRandomPosition = (width, height) => {
-    let randomTop, randomLeft;
-    let newPosition;
-    let overlap;
-
-    do {
-      randomTop = Math.random() * (90 - height); // 画面の範囲内に収める
-      randomLeft = Math.random() * (90 - width); // 画面の範囲内に収める
-      newPosition = { top: randomTop, left: randomLeft };
-      overlap = checkOverlap(newPosition, width, height);
-    } while (overlap);
-
-    positions.current.push({ ...newPosition, width, height }); // 新しい位置を保存
-    return { top: `${randomTop}%`, left: `${randomLeft}%` };
-  };
+  useBackgroundColor();
 
   return (
     <div className={styles.container}>
+      <br />
       <ul className={styles.list}>
-        {keywords.map((item, index) => {
-          const buttonWidth = 20; // ボタンの幅（%で想定）
-          const buttonHeight = 10; // ボタンの高さ（%で想定）
-          const randomPosition = getRandomPosition(buttonWidth, buttonHeight); // ランダム位置を生成
+        {whenKeywords.map((item, index) => {
+          // const buttonWidth = 20; // ボタンの幅（%で想定）
+          // const buttonHeight = 10; // ボタンの高さ（%で想定）
+          // const randomPosition = getRandomPosition(buttonWidth, buttonHeight); // ランダム位置を生成
 
           return (
             <li
               key={item.id || index}
               // className={styles.listItem}
-              style={{ ...randomPosition }} // ランダムな位置を設定
+              // style={{ ...randomPosition }} // ランダムな位置を設定
             >
               <button
                 className={styles.button}

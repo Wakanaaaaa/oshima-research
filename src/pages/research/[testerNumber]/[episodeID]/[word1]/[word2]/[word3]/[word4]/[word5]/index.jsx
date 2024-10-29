@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
@@ -15,6 +15,7 @@ export default function Word5() {
   const [colors, setColors] = useState([]); // カラー用のステート
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
+  const fieldName = "thoughts"; // 直接取得するフィールド名を指定
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -26,31 +27,31 @@ export default function Word5() {
           "episodes"
         );
 
-        const q = query(subcollectionRef, where("__name__", "==", episodeID));
-        const subcollectionSnapshot = await getDocs(q);
+        const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const allFieldsArray = [];
-
+        const fieldsArray = [];
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
-          for (const [key, value] of Object.entries(data)) {
-            if (
-              key !== "do" &&
-              value !== word1 &&
-              value !== word2 &&
-              value !== word3 &&
-              value !== word4 &&
-              value !== word5
-            ) {
-              allFieldsArray.push({ key, value, episodeID: docID });
-            }
+
+          // 重複を避け、指定されたフィールドが存在するエピソードを収集
+          if (
+            data[fieldName] &&
+            data.when === word1 &&
+            data.where === word2 &&
+            data.who === word3 &&
+            data.what === word4 &&
+            !fieldsArray.some((item) => item.value === data[fieldName]) // 重複チェック
+          ) {
+            fieldsArray.push({
+              value: data[fieldName],
+              episodeID: docID,
+            });
           }
         });
 
-        const shuffledArray = shuffleArray(allFieldsArray);
+        const shuffledArray = shuffleArray(fieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-
         setKeywords(randomFields);
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
@@ -59,7 +60,9 @@ export default function Word5() {
       }
     };
 
-    fetchDocumentsForWord1();
+    if (testerNumber && fieldName) {
+      fetchDocumentsForWord1();
+    }
   }, [episodeID, word1, word2, word3, word4, word5, testerNumber]);
 
   useBackgroundColor();
