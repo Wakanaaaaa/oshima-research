@@ -9,11 +9,9 @@ import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 
 export default function Word1() {
   const router = useRouter();
-  // const { episodeID, word1 } = router.query;
-  // const [keywords, setKeywords] = useState([]);
+  const { testerNumber } = router.query;
   const [whenKeywords, setWhenKeywords] = useState([]);
   const [colors, setColors] = useState([]);
-  const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
 
   useEffect(() => {
@@ -44,13 +42,10 @@ export default function Word1() {
           }
         });
 
-        setWhenKeywords(whenFieldsArray);
-        console.log("setWhenKeywords:", whenFieldsArray);
-
         // 単語リストをランダムにシャッフルし、6つ取得
         const shuffledArray = shuffleArray(whenFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-        setKeywords(randomFields);
+        setWhenKeywords(randomFields);
 
         // ランダムな色を生成
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -71,28 +66,18 @@ export default function Word1() {
     <div className={styles.container}>
       <br />
       <ul className={styles.list}>
-        {whenKeywords.map((item, index) => {
-          // const buttonWidth = 20; // ボタンの幅（%で想定）
-          // const buttonHeight = 10; // ボタンの高さ（%で想定）
-          // const randomPosition = getRandomPosition(buttonWidth, buttonHeight); // ランダム位置を生成
-
-          return (
-            <li
-              key={item.id || index}
-              // className={styles.listItem}
-              // style={{ ...randomPosition }} // ランダムな位置を設定
+        {whenKeywords.map((item, index) => (
+          <li key={item.episodeID || index}>
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`research/${testerNumber}/${item.episodeID}/${item.value}`}
+              ref={addToRefs}
             >
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-                id={`research/${testerNumber}/${item.episodeID}/${item.value}`}
-                ref={addToRefs}
-              >
-                {item.value}
-              </button>
-            </li>
-          );
-        })}
+              {item.value}
+            </button>
+          </li>
+        ))}
       </ul>
     </div>
   );
