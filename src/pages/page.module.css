@@ -1,0 +1,17 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* padding: 6rem; */
+  /* min-height: 100vh; */
+}
+
+.button {
+  background-color: #707070;
+  color: white; /* テキストを白に */
+  border: none; /* ボーダーをなくす */
+  padding: 10px 20px; /* パディングを追加 */
+  font-size: 1rem; /* フォントサイズ */
+  border-radius: 5px; /* 角を丸くする */
+}

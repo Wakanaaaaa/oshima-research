@@ -1,52 +1,59 @@
+// // Home.jsx
+// "use client";
+
+// import { doc, getDoc } from "firebase/firestore";
+// import { db } from "../firebase"; // "@/firebase" ではなく "../firebase" を使用
+// import styles from "./page.module.css";
+// import { useEffect } from "react";
+// import Link from "next/link";
+
+// export default function Home() {
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const docSnap = await getDoc(doc(db, "4Wwords", "1", "episodes", "1"));
+//         if (docSnap.exists()) {
+//           console.log(docSnap.data());
+//         } else {
+//           console.log("No such document!");
+//         }
+//       } catch (error) {
+//         console.error("Error fetching document: ", error);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   return (
+//     <main className={styles.main}>
+//       <h1 className={styles.title}>話題選択支援研究</h1>
+//       <h2 className={styles.title}>エピソードを表示する</h2>
+//       <div>
+//         <Link href="/input-tester-number" passHref>
+//           <button className={styles.button}>入力を開始する</button>
+//         </Link>
+//       </div>
+//     </main>
+//   );
+// }
+
+// src/index.jsx
 "use client";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
-import styles from "../styles/word.module.css";
-import { useEffect, useState } from "react"; // useStateを追加
-import { useRouter } from "next/navigation";
+
+import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
-  const [testerNumber, setTesterNumber] = useState(""); // 被験者番号を保存する状態を追加
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const docSnap = await getDoc(doc(db, "4Wwords", "1", "episodes", "1"));
-      console.log(docSnap.data());
-    };
-    fetchData();
-  }, []);
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    console.log("submit");
-    if (testerNumber) {
-      router.push(`/research/${testerNumber}`); // 被験者番号を使って遷移
-    } else {
-      console.error("Tester Number is not provided.");
-    }
-  };
-
-  const handleInputChange = (e) => {
-    setTesterNumber(e.target.value); // 入力された値を更新
-  };
-
-
   return (
     <main className={styles.main}>
-      <h2 className={styles.title}>被験者番号を入力してください</h2>
-
-      <form action="post" onSubmit={onSubmit}>
-        <label htmlFor="tester-number">被験者番号</label>
-        <input 
-          id="tester-number" 
-          type="number" 
-          value={testerNumber} // 状態をinputの値として設定
-          onChange={handleInputChange} // 値が変更されたら状態を更新
-        />
-
-        <button type="submit">OK</button>
-      </form>
+      <h1 className={styles.title}>話題選択支援研究</h1>
+      <h2 className={styles.title}>エピソードを表示する</h2>
+      <div>
+        <Link href="/input-tester-number" passHref>
+          <button className={styles.button}>入力を開始する</button>
+        </Link>
+      </div>
     </main>
   );
 }
