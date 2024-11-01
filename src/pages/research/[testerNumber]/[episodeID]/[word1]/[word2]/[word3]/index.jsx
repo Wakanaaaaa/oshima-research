@@ -15,7 +15,6 @@ export default function Word3() {
   const [colors, setColors] = useState([]);
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
-  const fieldName = "what"; // 直接取得するフィールド名を指定
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -29,7 +28,9 @@ export default function Word3() {
 
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const fieldsArray = [];
+        const allFieldsArray = [];
+        const seenValues = new Set(); // 重複を防ぐためのセット
+
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
@@ -61,7 +62,7 @@ export default function Word3() {
           }
         });
 
-        const shuffledArray = shuffleArray(fieldsArray);
+        const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
         setKeywords(randomFields);
 
@@ -72,10 +73,10 @@ export default function Word3() {
       }
     };
 
-    if (testerNumber && fieldName) {
+    if (testerNumber) {
       fetchDocumentsForWord1();
     }
-  }, [episodeID, word1, word2, word3, testerNumber, fieldName]);
+  }, [episodeID, word1, word2, word3, testerNumber]);
 
   useBackgroundColor();
 

@@ -14,7 +14,6 @@ export default function Word2() {
   const [keywords, setKeywords] = useState([]); // ステート名を統一
   const [colors, setColors] = useState([]); // カラー用のステート
   const { addToRefs } = usePinchZoom(); // カスタムフックの利用
-  const fieldName = "who"; // 直接取得するフィールド名を指定
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -28,7 +27,9 @@ export default function Word2() {
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const fieldsArray = [];
+        const allFieldsArray = [];
+        const seenValues = new Set(); // 重複を防ぐためのセット
+
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
@@ -59,21 +60,21 @@ export default function Word2() {
           }
         });
 
-        const shuffledArray = shuffleArray(fieldsArray);
-        const randomFields = shuffledArray.slice(0, 6);
-        setKeywords(randomFields);
+        const shuffledArray = shuffleArray(allFieldsArray);
+        const randomwho = shuffledArray.slice(0, 6);
+        setKeywords(randomwho);
 
-        const randomColors = randomFields.map(() => generateRandomColor());
+        const randomColors = randomwho.map(() => generateRandomColor());
         setColors(randomColors);
       } catch (error) {
         console.error("Error fetching subcollection documents: ", error);
       }
     };
 
-    if (testerNumber && fieldName) {
+    if (testerNumber) {
       fetchDocumentsForWord1();
     }
-  }, [testerNumber, episodeID, word1, word2, fieldName]);
+  }, [testerNumber, episodeID, word1, word2]);
 
   useBackgroundColor();
 

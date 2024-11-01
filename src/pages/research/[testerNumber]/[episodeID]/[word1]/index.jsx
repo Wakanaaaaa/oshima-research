@@ -27,7 +27,7 @@ export default function Word2() {
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const whereArray = [];
+        const allFieldsArray = [];
         const seenValues = new Set(); // 重複を防ぐためのセット
 
         // 各エピソードをチェック
