@@ -26,12 +26,11 @@ export default function Word1() {
         const subcollectionSnapshot = await getDocs(subcollectionRef);
         const allFieldsArray = [];
         const wordCount = {}; // 単語ごとの出現回数を追跡
-
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
           for (const [key, value] of Object.entries(data)) {
-            if (key !== "do") {
+            if (key !== "do" && key !== "createdAt" && key !== "sentence") {
               // 単語の初出現の場合のみ追加
               if (!wordCount[value]) {
                 allFieldsArray.push({ key, value, episodeID: docID });
