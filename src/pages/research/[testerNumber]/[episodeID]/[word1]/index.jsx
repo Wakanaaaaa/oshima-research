@@ -8,29 +8,26 @@ import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import styles from "../../../../../styles/word.module.css";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 
-export default function Word1() {
+export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1 } = router.query;
-  const [keywords, setKeywords] = useState([]);
+  const { testerNumber, episodeID, word1 } = router.query;
+  const [whereKeywords, setWhereKeywords] = useState([]);
   const [colors, setColors] = useState([]);
-  const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
 
   useEffect(() => {
-    const fetchDocumentsForWord1 = async () => {
+    const fetchWhereDocuments = async () => {
       try {
-        // Firestoreのコレクションからデータを取得
+        // すべてのエピソードを取得
         const subcollectionRef = collection(
           db,
           "4Wwords",
           testerNumber,
           "episodes"
         );
-
-        // すべてのエピソードを取得
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const allFieldsArray = [];
+        const whereArray = [];
         const seenValues = new Set(); // 重複を防ぐためのセット
 
         // 各エピソードをチェック
@@ -72,29 +69,30 @@ export default function Word1() {
         // 単語リストをランダムにシャッフルし、6つ取得
         const shuffledArray = shuffleArray(allFieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-        setKeywords(randomFields);
+        setWhereKeywords(randomFields);
 
         // ランダムな色を生成
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
       } catch (error) {
-        console.error("Error fetching subcollection documents: ", error);
+        console.error("Error fetching where data: ", error);
       }
     };
 
-    if (word1 && testerNumber) {
-      fetchDocumentsForWord1();
+    if (episodeID && testerNumber) {
+      fetchWhereDocuments();
     }
-  }, [episodeID, word1, testerNumber]);
+  }, [episodeID, testerNumber, word1]);
 
   useBackgroundColor();
 
   return (
     <div>
+      {/* 選択した単語を表示 */}
       <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
 
       <ul className={styles.list}>
-        {keywords.map((item, index) => (
+        {whereKeywords.map((item, index) => (
           <li key={index}>
             <button
               className={styles.button}

@@ -10,11 +10,11 @@ import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 
 export default function Word2() {
   const router = useRouter();
-  const { episodeID, word1, word2 } = router.query;
-  const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
+  const { episodeID, word1, word2, testerNumber } = router.query; // 必要なクエリを取得
+  const [keywords, setKeywords] = useState([]); // ステート名を統一
   const [colors, setColors] = useState([]); // カラー用のステート
-  const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(); // カスタムフックの利用
+  const fieldName = "who"; // 直接取得するフィールド名を指定
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -28,10 +28,7 @@ export default function Word2() {
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const allFieldsArray = [];
-        const seenValues = new Set(); // 重複を防ぐためのセット
-
-        // 全エピソードをチェック
+        const fieldsArray = [];
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
@@ -62,7 +59,7 @@ export default function Word2() {
           }
         });
 
-        const shuffledArray = shuffleArray(allFieldsArray);
+        const shuffledArray = shuffleArray(fieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
         setKeywords(randomFields);
 
@@ -73,8 +70,10 @@ export default function Word2() {
       }
     };
 
-    fetchDocumentsForWord1();
-  }, [episodeID, word1, word2, testerNumber]);
+    if (testerNumber && fieldName) {
+      fetchDocumentsForWord1();
+    }
+  }, [testerNumber, episodeID, word1, word2, fieldName]);
 
   useBackgroundColor();
 
@@ -85,7 +84,7 @@ export default function Word2() {
       </h3>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
-          <li key={item.id || index}>
+          <li key={item.episodeID || index}>
             <button
               className={styles.button}
               style={{ borderColor: colors[index] }}

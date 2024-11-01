@@ -15,6 +15,7 @@ export default function Word4() {
   const [colors, setColors] = useState([]); // カラー用のステート
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
+  const fieldName = "thoughts"; // 直接取得するフィールド名を指定
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -28,24 +29,19 @@ export default function Word4() {
 
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const allFieldsArray = [];
-        const seenValues = new Set(); // 重複を防ぐためのセット
-
-        // 全エピソードをチェック
+        const fieldsArray = [];
         subcollectionSnapshot.forEach((doc) => {
           const data = doc.data();
           const docID = doc.id;
 
-          const containsWord1 = Object.values(data).includes(word1);
-          const containsWord2 = Object.values(data).includes(word2);
-          const containsWord3 = Object.values(data).includes(word3);
-          const containsWord4 = Object.values(data).includes(word4);
-
+          // 重複を避け、指定されたフィールドが存在するエピソードを収集
           if (
-            containsWord1 &&
-            containsWord2 &&
-            containsWord3 &&
-            containsWord4
+            data[fieldName] &&
+            data.when === word1 &&
+            data.where === word2 &&
+            data.who === word3 &&
+            data.what === word4 &&
+            !fieldsArray.some((item) => item.value === data[fieldName]) // 重複チェック
           ) {
             for (const [key, value] of Object.entries(data)) {
               if (
@@ -70,9 +66,8 @@ export default function Word4() {
           }
         });
 
-        const shuffledArray = shuffleArray(allFieldsArray);
+        const shuffledArray = shuffleArray(fieldsArray);
         const randomFields = shuffledArray.slice(0, 6);
-
         setKeywords(randomFields);
 
         const randomColors = randomFields.map(() => generateRandomColor());
@@ -82,8 +77,10 @@ export default function Word4() {
       }
     };
 
-    fetchDocumentsForWord1();
-  }, [episodeID, word1, word2, word3, word4, testerNumber]);
+    if (testerNumber && fieldName) {
+      fetchDocumentsForWord1();
+    }
+  }, [episodeID, word1, word2, word3, word4, testerNumber, fieldName]);
 
   useBackgroundColor();
 
