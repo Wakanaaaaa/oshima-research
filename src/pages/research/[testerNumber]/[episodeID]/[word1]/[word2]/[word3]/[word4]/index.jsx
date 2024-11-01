@@ -50,6 +50,8 @@ export default function Word4() {
             for (const [key, value] of Object.entries(data)) {
               if (
                 key !== "do" &&
+                key !== "createdAt" &&
+                key !== "sentence" &&
                 value !== word1 &&
                 value !== word2 &&
                 value !== word3 &&

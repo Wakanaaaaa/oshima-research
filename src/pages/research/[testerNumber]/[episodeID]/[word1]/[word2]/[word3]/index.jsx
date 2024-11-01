@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getDocs, collection} from "firebase/firestore";
+import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
@@ -44,6 +44,8 @@ export default function Word3() {
             for (const [key, value] of Object.entries(data)) {
               if (
                 key !== "do" &&
+                key !== "createdAt" &&
+                key !== "sentence" &&
                 value !== word1 &&
                 value !== word2 &&
                 value !== word3 &&

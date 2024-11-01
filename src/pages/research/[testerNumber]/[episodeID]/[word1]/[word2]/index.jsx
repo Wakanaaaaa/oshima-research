@@ -44,6 +44,8 @@ export default function Word2() {
             for (const [key, value] of Object.entries(data)) {
               if (
                 key !== "do" &&
+                key !== "createdAt" &&
+                key !== "sentence" &&
                 value !== word1 &&
                 value !== word2 &&
                 !seenValues.has(value)
