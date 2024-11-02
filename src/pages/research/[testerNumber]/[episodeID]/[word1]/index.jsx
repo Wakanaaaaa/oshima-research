@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
-import styles from "../../../../../styles/word.module.css";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
+import Link from "next/link";
+import styles from "../../../../../styles/word.module.css";
 
 export default function Word1() {
   const router = useRouter();

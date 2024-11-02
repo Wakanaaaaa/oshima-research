@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState} from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase";
 import { useRouter } from "next/router";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebase";
 import styles from "../../../styles/word.module.css";
 
 export default function Word1() {
