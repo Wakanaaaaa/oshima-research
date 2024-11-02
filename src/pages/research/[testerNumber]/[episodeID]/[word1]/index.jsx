@@ -53,7 +53,7 @@ export default function Word1() {
               if (
                 key !== "do" &&
                 key !== "createdAt" &&
-                key !== "sentence" && 
+                key !== "sentence" &&
                 value !== word1 && // word1 以外
                 !seenValues.has(value) // 重複を避ける
               ) {
@@ -91,7 +91,12 @@ export default function Word1() {
 
   return (
     <div>
-      <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
+      <div className={styles.selectedWordContainer}>
+        <h3 className={styles.selectedWordText}>選択した単語：</h3>
+        <div className={styles.selectedWordsList}>
+          <span className={styles.selectedWordHighlight}>{word1}</span>
+        </div>
+      </div>
 
       <ul className={styles.list}>
         {keywords.map((item, index) => (

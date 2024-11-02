@@ -91,10 +91,16 @@ export default function Word5() {
 
   return (
     <div>
-      <h3 className={styles.selectedWord}>
-        選択した単語：[ {word1} ]---[ {word2} ]---[ {word3} ]---[ {word4} ] ---
-        [ {word5} ]
-      </h3>
+      <div className={styles.selectedWordContainer}>
+        <h3 className={styles.selectedWordText}>選択した単語：</h3>
+        <div className={styles.selectedWordsList}>
+          <span className={styles.selectedWordHighlight}>{word1}</span>
+          <span className={styles.selectedWordHighlight}>{word2}</span>
+          <span className={styles.selectedWordHighlight}>{word3}</span>
+          <span className={styles.selectedWordHighlight}>{word4}</span>
+          <span className={styles.selectedWordHighlight}>{word5}</span>
+        </div>
+      </div>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.id || index}>
