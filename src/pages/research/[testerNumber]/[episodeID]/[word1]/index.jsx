@@ -71,8 +71,12 @@ export default function Word2() {
   return (
     <div>
       {/* 選択した単語を表示 */}
-      <h3 className={styles.selectedWord}>選択した単語：[ {word1} ]</h3>
-
+      <div className={styles.selectedWordContainer}>
+        <h3 className={styles.selectedWordText}>選択した単語：</h3>
+        <div className={styles.selectedWordsList}>
+          <span className={styles.selectedWordHighlight}>{word1}</span>
+        </div>
+      </div>
       <ul className={styles.list}>
         {whereKeywords.map((item, index) => (
           <li key={index}>

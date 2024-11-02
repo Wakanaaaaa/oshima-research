@@ -9,6 +9,42 @@
   overflow: hidden; /* 子要素がはみ出さないようにする */
 }
 
+.selectedWordContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: #f0f8ff; /* 薄い青の背景 */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap; /* 小さい画面で折り返す */
+}
+
+.selectedWordText {
+  font-size: 1em;
+  font-weight: bold;
+  color: #333;
+  margin: 0.1em 0 0 0.5em;
+  flex-shrink: 0;
+}
+
+.selectedWordsList {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap; /* 小さい画面で折り返し */
+}
+
+.selectedWordHighlight {
+  font-size: 1em;
+  font-weight: bold;
+  color: #007acc;
+  background-color: #ccefff;
+  padding: 0.3em 0.6em;
+  border-radius: 5px;
+  white-space: nowrap; /* 折り返し防止 */
+  flex-shrink: 0;
+}
+
 .list {
   position: relative; /* 子要素の配置を相対的にする */
   width: 100%;
@@ -18,6 +54,8 @@
   margin: 0;
   padding-top: 50px;
   padding-bottom: 60px; /* 戻るボタンのためのスペース確保 */
+  flex-wrap: wrap;
+  gap: 0.5em;
 }
 
 .listItem {
@@ -32,7 +70,7 @@
 
 .button {
   font-size: 1.5em; /* フォントサイズを大きくする */
-  padding: 20px; /* ボタン内の余白を増やす */
+  padding: 0.5em 1em;
   margin: 5px;
   border-radius: 50px;
   border: 3px solid transparent;

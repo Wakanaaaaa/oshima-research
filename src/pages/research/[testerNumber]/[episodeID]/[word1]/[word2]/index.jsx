@@ -36,7 +36,8 @@ export default function Word2() {
           // 重複を避け、指定されたフィールドが存在するエピソードを収集
           if (
             data[fieldName] &&
-            (data.when === word1 && data.where === word2) &&
+            data.when === word1 &&
+            data.where === word2 &&
             !fieldsArray.some((item) => item.value === data[fieldName]) // 重複チェック
           ) {
             fieldsArray.push({
@@ -66,9 +67,13 @@ export default function Word2() {
 
   return (
     <div>
-      <h3 className={styles.selectedWord}>
-        選択した単語：[ {word1} ]---[ {word2} ]
-      </h3>
+      <div className={styles.selectedWordContainer}>
+        <h3 className={styles.selectedWordText}>選択した単語：</h3>
+        <div className={styles.selectedWordsList}>
+          <span className={styles.selectedWordHighlight}>{word1}</span>
+          <span className={styles.selectedWordHighlight}>{word2}</span>
+        </div>
+      </div>
       <ul className={styles.list}>
         {keywords.map((item, index) => (
           <li key={item.episodeID || index}>
