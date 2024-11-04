@@ -1,49 +1,19 @@
+/* 共通スタイル */
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  /* min-height: 100vh; */
-}
- /* PCや大きな画面向けのスタイル */
- .main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
 }
 
-/* スマホ向けのスタイル */
-@media (max-width: 768px) {
-  .main {
-    padding: 1rem; /* スマホではパディングを小さくして見やすく */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start; /* スマホでは左揃えにする */
-    min-height: auto; /* 高さの指定を解除して、自然なレイアウトに */
-  }
-}
 
-.form {
+
+.form, .registration {
   padding: 1rem;
   border: 1px solid #ccc;
   display: grid;
   grid-template-columns: 1fr;
-}
-
-.input {
-  padding-top: 0.5rem;
-  display: grid;
-  grid-template-columns: 2fr 3fr;
-
-  .label {
-    text-align: left;
-    justify-content: center;
-  }
 }
 
 .input {
@@ -56,66 +26,63 @@
 .label {
   width: 100px;
   text-align: left;
-  display: inline-block;
   margin-right: 10px;
 }
 
 .inputField {
   flex: 1;
   padding: 10px;
-  margin-right: 10px;
   font-size: 16px;
 }
 
+
 .todayButton {
   padding: 4px 8px;
-  margin: 0 10px;
   font-size: 16px;
+  margin: 0 0 15px 10px;
+  white-space: nowrap; /* 改行防止 */
+}
+
+
+.whoInputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 追加: 子要素を左右に配置 */
+}
+
+.soloButton {
+  padding: 4px 8px;
+  font-size: 16px;
+  margin: 0 0 10px 30px;
+  white-space: nowrap; /* 改行防止 */
 }
 
 .datePickerIcon {
   display: flex;
   align-items: center;
-  border: 1px solid#707070;
+  border: 1px solid #707070;
   border-radius: 2px;
-  display: inline-block;
+  margin: 0 0 10px 10px;
 }
 
-.registration {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  display: grid;
-  grid-template-columns: 1fr;
-}
-
+/* スマホ向けのスタイル */
 @media (max-width: 768px) {
-
-  /* スマホ表示向けのスタイル */
-  .input {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    margin-bottom: 15px;
+  .main {
+    padding: 1rem;
+    align-items: flex-start;
+    min-height: auto;
   }
 
-  .label {
-    margin-bottom: 5px;
+  .title {
+    white-space: nowrap;
   }
 
   .inputField {
     width: 100%;
-    margin-right: 0;
     margin-bottom: 10px;
   }
 
-  .todayButton {
-    margin-bottom: 10px;
+  .todayButton, .soloButton {
+    margin-bottom: 20px;
   }
-
-  .datePickerIcon {
-    margin-left: 10px;
-    margin-bottom: 10px;
-    justify-content: flex-start;
-  }
-
 }
