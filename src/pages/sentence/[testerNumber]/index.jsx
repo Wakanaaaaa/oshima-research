@@ -36,6 +36,14 @@ export default function SentenceList() {
     fetchSentences();
   }, [testerNumber]);
 
+  // ランダムに6つの文を取得する関数
+  const getRandomSentences = (arr, num) => {
+    const shuffled = [...arr].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, num);
+  };
+
+  const randomSentences = getRandomSentences(sentences, 6);
+
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>実験参加者番号：{testerNumber}</h1>
@@ -43,8 +51,8 @@ export default function SentenceList() {
         <p className={styles.loading}>Loading...</p> // ローディング表示
       ) : (
         <ul className={styles.list}>
-          {sentences.length > 0 ? (
-            sentences.map((sentence, index) => (
+          {randomSentences.length > 0 ? (
+            randomSentences.map((sentence, index) => (
               <li key={index} className={styles.sentenceItem}>
                 {sentence}
               </li>
