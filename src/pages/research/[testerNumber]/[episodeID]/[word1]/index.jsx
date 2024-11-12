@@ -5,8 +5,9 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
-import styles from "../../../../../styles/word.module.css";
+import styles from "@/styles/word.module.css";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
+import { useEpisode } from "@/contexts/EpisodeContext";
 
 export default function Word2() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function Word2() {
   const [whereKeywords, setWhereKeywords] = useState([]);
   const [colors, setColors] = useState([]);
   const { addToRefs } = usePinchZoom(testerNumber);
+  const { episodeType } = useEpisode();
 
   useEffect(() => {
     const fetchWhereDocuments = async () => {
@@ -23,7 +25,7 @@ export default function Word2() {
           db,
           "4Wwords",
           testerNumber,
-          "episodes"
+          episodeType
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
 
@@ -64,7 +66,7 @@ export default function Word2() {
     if (episodeID && testerNumber) {
       fetchWhereDocuments();
     }
-  }, [episodeID, testerNumber, word1]);
+  }, [episodeID, testerNumber, word1, episodeType]);
 
   useBackgroundColor();
 

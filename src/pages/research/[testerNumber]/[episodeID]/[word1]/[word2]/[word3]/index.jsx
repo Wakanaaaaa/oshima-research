@@ -5,8 +5,9 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
-import styles from "../../../../../../../styles/word.module.css";
+import styles from "@/styles/word.module.css";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
+import { useEpisode } from "@/contexts/EpisodeContext";
 
 export default function Word3() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function Word3() {
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
   const fieldName = "what"; // 直接取得するフィールド名を指定
+  const { episodeType } = useEpisode();
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -24,7 +26,7 @@ export default function Word3() {
           db,
           "4Wwords",
           testerNumber,
-          "episodes"
+          episodeType
         );
 
         const subcollectionSnapshot = await getDocs(subcollectionRef);
@@ -63,7 +65,7 @@ export default function Word3() {
     if (testerNumber && fieldName) {
       fetchDocumentsForWord1();
     }
-  }, [episodeID, word1, word2, word3, testerNumber, fieldName]);
+  }, [episodeID, word1, word2, word3, testerNumber, fieldName, episodeType]);
 
   useBackgroundColor();
 

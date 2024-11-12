@@ -1,21 +1,13 @@
 "use client";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
 import styles from "../styles/word.module.css";
-import { useEffect, useState } from "react"; // useStateを追加
+import { useState } from "react"; // useStateを追加
 import { useRouter } from "next/navigation";
+import { useEpisode } from "../contexts/EpisodeContext";
 
 export default function Home() {
   const router = useRouter();
   const [testerNumber, setTesterNumber] = useState(""); // 被験者番号を保存する状態を追加
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const docSnap = await getDoc(doc(db, "4Wwords", "1", "episodes", "1"));
-      console.log(docSnap.data());
-    };
-    fetchData();
-  }, []);
+  const { episodeType, setEpisodeType } = useEpisode();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -31,19 +23,40 @@ export default function Home() {
     setTesterNumber(e.target.value); // 入力された値を更新
   };
 
+  // エピソードIDの選択変更処理
+  const handleEpisodeChange = (e) => {
+    setEpisodeType(e.target.value);
+  };
 
   return (
     <main className={styles.main}>
-      <h2 className={styles.title}>被験者番号を入力してください</h2>
+      <h2 className={styles.title}>--被験者番号を入力してください--</h2>
 
-      <form action="post" onSubmit={onSubmit}>
-        <label htmlFor="tester-number">被験者番号</label>
-        <input 
-          id="tester-number" 
-          type="number" 
-          value={testerNumber} // 状態をinputの値として設定
-          onChange={handleInputChange} // 値が変更されたら状態を更新
-        />
+      <form onSubmit={onSubmit}>
+        <div className="input-group">
+          <label htmlFor="tester-number">被験者番号</label>
+          <input
+            id="tester-number"
+            type="number"
+            value={testerNumber}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="episode-switcher" className={styles.episodeSwitcher}>
+            エピソードを選択
+          </label>
+          <select
+            id="episode-switcher"
+            value={episodeType}
+            onChange={handleEpisodeChange}
+          >
+            <option value="episodeA">Episode A</option>
+            <option value="episodeB">Episode B</option>
+            <option value="episodeC">Episode C</option>
+          </select>
+        </div>
 
         <button type="submit">OK</button>
       </form>

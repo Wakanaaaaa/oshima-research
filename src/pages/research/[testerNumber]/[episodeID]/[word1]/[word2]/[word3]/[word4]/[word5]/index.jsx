@@ -5,8 +5,8 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
-import styles from "../../../../../../../../../styles/word.module.css";
-import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
+import styles from "@/styles/word.module.css";
+import { useEpisode } from "@/contexts/EpisodeContext";
 
 export default function Word5() {
   const router = useRouter();
@@ -14,8 +14,8 @@ export default function Word5() {
   const [keywords, setKeywords] = useState([]); // 空の配列を用意(ステート管理)
   const [colors, setColors] = useState([]); // カラー用のステート
   const { testerNumber } = router.query;
-  const { addToRefs } = usePinchZoom(testerNumber); // カスタムフックの利用
   const fieldName = "thoughts"; // 直接取得するフィールド名を指定
+  const { episodeType } = useEpisode();
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -24,7 +24,7 @@ export default function Word5() {
           db,
           "4Wwords",
           testerNumber,
-          "episodes"
+          episodeType
         );
 
         const subcollectionSnapshot = await getDocs(subcollectionRef);
@@ -63,7 +63,7 @@ export default function Word5() {
     if (testerNumber && fieldName) {
       fetchDocumentsForWord1();
     }
-  }, [episodeID, word1, word2, word3, word4, word5, testerNumber]);
+  }, [episodeID, word1, word2, word3, word4, word5, testerNumber, episodeType]);
 
   useBackgroundColor();
 
@@ -79,21 +79,6 @@ export default function Word5() {
           <span className={styles.selectedWordHighlight}>{word5}</span>
         </div>
       </div>
-      {/* <ul className={styles.list}>
-        {keywords.map((item, index) => (
-          <li key={item.id || index}>
-            <button
-              className={styles.button}
-              style={{ borderColor: colors[index] }}
-              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${word4}/${word5}/${item.value}`}
-              ref={addToRefs}
-            >
-              {item.value}
-            </button>
-          </li>
-        ))}
-      </ul> */}
-
       <Link
         href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}/${word4}`}
       >
