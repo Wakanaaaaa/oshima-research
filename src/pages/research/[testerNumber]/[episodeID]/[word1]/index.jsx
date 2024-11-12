@@ -6,7 +6,8 @@ import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import Link from "next/link";
-import styles from "../../../../../styles/word.module.css";
+import styles from "@/styles/word.module.css"
+import { useEpisode } from "@/contexts/EpisodeContext";
 
 export default function Word1() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function Word1() {
   const [colors, setColors] = useState([]);
   const { testerNumber } = router.query;
   const { addToRefs } = usePinchZoom(testerNumber);
+  const { episodeType } = useEpisode();
 
   useEffect(() => {
     const fetchDocumentsForWord1 = async () => {
@@ -24,7 +26,7 @@ export default function Word1() {
           db,
           "4Wwords",
           testerNumber,
-          "episodes"
+          episodeType
         );
 
         // すべてのエピソードを取得
@@ -85,7 +87,7 @@ export default function Word1() {
     if (word1 && testerNumber) {
       fetchDocumentsForWord1();
     }
-  }, [episodeID, word1, testerNumber]);
+  }, [episodeID, word1, testerNumber, episodeType]);
 
   useBackgroundColor();
 

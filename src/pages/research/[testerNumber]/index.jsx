@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
-import styles from "../../../styles/word.module.css";
+import styles from "@/styles/word.module.css";
+import { useEpisode } from "@/contexts/EpisodeContext";
 
 export default function Word1() {
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function Word1() {
   const [keywords, setKeywords] = useState([]);
   const [colors, setColors] = useState([]);
   const { addToRefs } = usePinchZoom(testerNumber);
+  const { episodeType } = useEpisode();
+  console.log("episodeType:", episodeType);
 
   useEffect(() => {
     const fetchAllDocuments = async () => {
@@ -21,7 +24,7 @@ export default function Word1() {
           db,
           "4Wwords",
           testerNumber,
-          "episodes"
+          episodeType
         );
         const subcollectionSnapshot = await getDocs(subcollectionRef);
         const allFieldsArray = [];
@@ -46,6 +49,7 @@ export default function Word1() {
 
         const randomColors = randomFields.map(() => generateRandomColor());
         setColors(randomColors);
+
       } catch (error) {
         console.error("Error fetching subcollection documents: ", error);
       }
@@ -54,7 +58,7 @@ export default function Word1() {
     if (testerNumber) {
       fetchAllDocuments();
     }
-  }, [testerNumber]);
+  }, [testerNumber, episodeType]);
 
   return (
     <div className={styles.container}>
