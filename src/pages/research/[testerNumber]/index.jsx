@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRouter } from "next/router";
@@ -7,78 +7,88 @@ import { generateRandomColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
+import ShuffleOnPull from "@/ShuffleOnPull";
 
 export default function Word1() {
   const router = useRouter();
   const { testerNumber } = router.query;
-  const [keywords, setKeywords] = useState([]);
-  const [colors, setColors] = useState([]);
+  const [keywordsWithColors, setKeywordsWithColors] = useState([]);
   const { addToRefs } = usePinchZoom(testerNumber);
   const { episodeType } = useEpisode();
-  console.log("episodeType:", episodeType);
 
-  useEffect(() => {
-    const fetchAllDocuments = async () => {
-      try {
-        const subcollectionRef = collection(
-          db,
-          "4Wwords",
-          testerNumber,
-          episodeType
-        );
-        const subcollectionSnapshot = await getDocs(subcollectionRef);
-        const allFieldsArray = [];
-        const wordCount = {}; // 単語ごとの出現回数を追跡
-        subcollectionSnapshot.forEach((doc) => {
-          const data = doc.data();
-          const docID = doc.id;
-          for (const [key, value] of Object.entries(data)) {
-            if (key !== "do" && key !== "createdAt" && key !== "sentence") {
-              // 単語の初出現の場合のみ追加
-              if (!wordCount[value]) {
-                allFieldsArray.push({ key, value, episodeID: docID });
-                wordCount[value] = 1; // 出現を記録
-              }
+  // ドキュメントを取得する関数
+  const fetchAllDocuments = async () => {
+    try {
+      const subcollectionRef = collection(
+        db,
+        "4Wwords",
+        testerNumber,
+        episodeType
+      );
+      const subcollectionSnapshot = await getDocs(subcollectionRef);
+      const allFieldsArray = [];
+      const wordCount = {};
+      subcollectionSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const docID = doc.id;
+        for (const [key, value] of Object.entries(data)) {
+          if (key !== "do" && key !== "createdAt" && key !== "sentence") {
+            if (!wordCount[value]) {
+              allFieldsArray.push({ key, value, episodeID: docID });
+              wordCount[value] = 1;
             }
           }
-        });
+        }
+      });
 
-        const shuffledArray = shuffleArray(allFieldsArray);
-        const randomFields = shuffledArray.slice(0, 6);
-        setKeywords(randomFields);
+      const shuffledArray = shuffleArray(allFieldsArray);
+      const randomFields = shuffledArray.slice(0, 6);
 
-        const randomColors = randomFields.map(() => generateRandomColor());
-        setColors(randomColors);
+      // 単語とその色をペアにして保存
+      const randomKeywordsWithColors = randomFields.map((field) => ({
+        ...field,
+        color: generateRandomColor(),
+      }));
 
-      } catch (error) {
-        console.error("Error fetching subcollection documents: ", error);
-      }
-    };
+      setKeywordsWithColors(randomKeywordsWithColors);
+    } catch (error) {
+      console.error("Error fetching subcollection documents: ", error);
+    }
+  };
 
+  // シャッフル関数
+  const handleShuffle = () => {
+    const shuffledKeywordsWithColors = shuffleArray(
+      keywordsWithColors.map((item) => ({
+        ...item,
+        color: generateRandomColor(),
+      }))
+    );
+    setKeywordsWithColors(shuffledKeywordsWithColors);
+  };
+
+  useEffect(() => {
     if (testerNumber) {
       fetchAllDocuments();
     }
   }, [testerNumber, episodeType]);
 
   return (
-    <div className={styles.container}>
-      <br />
+    <ShuffleOnPull keywordsWithColors={keywordsWithColors} onShuffle={handleShuffle}>
       <ul className={styles.list}>
-        {keywords.map((item, index) => {
-          return (
-            <li key={item.id || index}>
-              <button
-                className={styles.button}
-                style={{ borderColor: colors[index] }}
-                id={`research/${testerNumber}/${item.episodeID}/${item.value}`}
-                ref={addToRefs}
-              >
-                {item.value}
-              </button>
-            </li>
-          );
-        })}
+        {keywordsWithColors.map((item, index) => (
+          <li key={item.id || index}>
+            <button
+              className={styles.button}
+              style={{ borderColor: item.color }}
+              id={`research/${testerNumber}/${item.episodeID}/${item.value}`}
+              ref={addToRefs}
+            >
+              {item.value}
+            </button>
+          </li>
+        ))}
       </ul>
-    </div>
+    </ShuffleOnPull>
   );
 }

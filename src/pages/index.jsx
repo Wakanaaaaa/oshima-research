@@ -31,7 +31,7 @@ export default function Home() {
 
   return (
     <main>
-    <h2>被験者番号を入力してください</h2>
+    <h2>---被験者番号を入力してください---</h2>
   
     <form onSubmit={onSubmit}>
       <div className="input-group">

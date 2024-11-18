@@ -97,3 +97,30 @@
 .input-group {
   margin-bottom: 16px; /* スペースを調整 */
 }
+
+/* styles/word.module.css */
+.shuffleButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50; /* ボタンの背景色 */
+  color: white; /* ボタンの文字色 */
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px; /* 上部のマージン */
+}
+
+/* styles/word.module.css */
+.pullIndicator {
+  position: fixed; /* または position: absolute; */
+  bottom: 20px; /* 下から20pxの位置に配置 */
+  left: 50%; /* 横中央に配置 */
+  transform: translateX(-50%); /* 完全に中央に調整 */
+  background-color: rgba(0, 0, 0, 0.7); /* 半透明の背景 */
+  color: white; /* 白文字 */
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  z-index: 999; /* 他の要素の上に表示されるように */
+}
