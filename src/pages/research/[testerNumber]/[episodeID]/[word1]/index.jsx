@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -6,8 +8,9 @@ import { shuffleArray } from "@/firestoreUtils.jsx";
 import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import Link from "next/link";
-import styles from "@/styles/word.module.css"
+import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
+import { PullToRefreshView } from "@/PullToRefreshView";
 
 export default function Word1() {
   const router = useRouter();
@@ -18,81 +21,83 @@ export default function Word1() {
   const { addToRefs } = usePinchZoom(testerNumber);
   const { episodeType } = useEpisode();
 
-  useEffect(() => {
-    const fetchDocumentsForWord1 = async () => {
-      try {
-        // Firestoreのコレクションからデータを取得
-        const subcollectionRef = collection(
-          db,
-          "4Wwords",
-          testerNumber,
-          episodeType
-        );
+  // Firestore からデータを取得する関数
+  const fetchDocumentsForWord1 = useCallback(async () => {
+    try {
+      const subcollectionRef = collection(
+        db,
+        "4Wwords",
+        testerNumber,
+        episodeType
+      );
 
-        // すべてのエピソードを取得
-        const subcollectionSnapshot = await getDocs(subcollectionRef);
+      const subcollectionSnapshot = await getDocs(subcollectionRef);
 
-        const allFieldsArray = [];
-        const seenValues = new Set(); // 重複を防ぐためのセット
+      const allFieldsArray = [];
+      const seenValues = new Set();
 
-        // 各エピソードをチェック
-        subcollectionSnapshot.forEach((doc) => {
-          const data = doc.data();
-          const docID = doc.id;
+      subcollectionSnapshot.forEach((doc) => {
+        const data = doc.data();
+        const docID = doc.id;
 
-          // word1を含むエピソードかどうか確認
-          let hasWord1 = false;
+        let hasWord1 = false;
+        for (const [key, value] of Object.entries(data)) {
+          if (value === word1) {
+            hasWord1 = true;
+            break;
+          }
+        }
+
+        if (hasWord1) {
           for (const [key, value] of Object.entries(data)) {
-            if (value === word1) {
-              hasWord1 = true;
-              break; // word1が見つかったら終了
+            if (
+              key !== "do" &&
+              key !== "createdAt" &&
+              key !== "sentence" &&
+              value !== word1 &&
+              !seenValues.has(value)
+            ) {
+              allFieldsArray.push({
+                key: key,
+                value: value,
+                episodeID: docID,
+              });
+              seenValues.add(value);
+              break;
             }
           }
+        }
+      });
 
-          // word1を含む場合、1つの他のフィールドを抽出
-          if (hasWord1) {
-            for (const [key, value] of Object.entries(data)) {
-              if (
-                key !== "do" &&
-                key !== "createdAt" &&
-                key !== "sentence" &&
-                value !== word1 && // word1 以外
-                !seenValues.has(value) // 重複を避ける
-              ) {
-                allFieldsArray.push({
-                  key: key,
-                  value: value,
-                  episodeID: docID,
-                });
-                seenValues.add(value); // 一度追加したらセットに登録
-                break; // 1つフィールドを見つけたら次のエピソードへ
-              }
-            }
-          }
-        });
+      const shuffledArray = shuffleArray(allFieldsArray);
+      const randomFields = shuffledArray.slice(0, 6);
+      setKeywords(randomFields);
 
-        // 単語リストをランダムにシャッフルし、6つ取得
-        const shuffledArray = shuffleArray(allFieldsArray);
-        const randomFields = shuffledArray.slice(0, 6);
-        setKeywords(randomFields);
+      const randomColors = randomFields.map(() => generateRandomColor());
+      setColors(randomColors);
+    } catch (error) {
+      console.error("Error fetching subcollection documents: ", error);
+    }
+  }, [testerNumber, episodeType, word1]);
 
-        // ランダムな色を生成
-        const randomColors = randomFields.map(() => generateRandomColor());
-        setColors(randomColors);
-      } catch (error) {
-        console.error("Error fetching subcollection documents: ", error);
-      }
-    };
-
+  // 初回レンダリングと更新時にデータ取得
+  useEffect(() => {
     if (word1 && testerNumber) {
       fetchDocumentsForWord1();
     }
-  }, [episodeID, word1, testerNumber, episodeType]);
+  }, [fetchDocumentsForWord1]);
 
+  // 背景色の設定
   useBackgroundColor();
 
+  // リフレッシュ時にデータ再取得
+  const handleRefresh = async () => {
+    await fetchDocumentsForWord1();
+  };
+
   return (
-    <div>
+    <div className={styles.container}>
+      {/* 固定表示される選択した単語の枠 */}
       <div className={styles.selectedWordContainer}>
         <h3 className={styles.selectedWordText}>選択した単語：</h3>
         <div className={styles.selectedWordsList}>
@@ -100,25 +105,29 @@ export default function Word1() {
         </div>
       </div>
 
-      <ul className={styles.list}>
-        {keywords.map((item, index) => (
-          <li key={index}>
-            <button
-              className={styles.button}
-              style={{ borderColor: colors[index] }}
-              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${item.value}`}
-              ref={addToRefs}
-            >
-              {item.value}
-            </button>
-          </li>
-        ))}
-      </ul>
+      {/* PullToRefreshView は単語リスト部分のみを包む */}
+      <div className={styles.listContainer}>
+        <PullToRefreshView onRefresh={handleRefresh}>
+          <ul className={styles.list}>
+            {keywords.map((item, index) => (
+              <li key={index}>
+                <button
+                  className={styles.button}
+                  style={{ borderColor: colors[index] }}
+                  id={`/research/${testerNumber}/${item.episodeID}/${word1}/${item.value}`}
+                  ref={addToRefs}
+                >
+                  {item.value}
+                </button>
+              </li>
+            ))}
+          </ul>
 
-      {/* 戻るボタン */}
-      <Link href={`/research/${testerNumber}`}>
-        <button className={styles.backButton}>戻る</button>
-      </Link>
+          <Link href={`/research/${testerNumber}`}>
+            <button className={styles.backButton}>戻る</button>
+          </Link>
+          </PullToRefreshView>
+          </div>
     </div>
   );
 }

@@ -7,11 +7,12 @@ import { generateRandomColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
-import ShuffleOnPull from "@/ShuffleOnPull";
+import { PullToRefreshView } from "@/PullToRefreshView";
 
 export default function Word1() {
   const router = useRouter();
   const { testerNumber } = router.query;
+  const [allKeywords, setAllKeywords] = useState([]); // 全データを保持
   const [keywordsWithColors, setKeywordsWithColors] = useState([]);
   const { addToRefs } = usePinchZoom(testerNumber);
   const { episodeType } = useEpisode();
@@ -41,30 +42,24 @@ export default function Word1() {
         }
       });
 
-      const shuffledArray = shuffleArray(allFieldsArray);
-      const randomFields = shuffledArray.slice(0, 6);
-
-      // 単語とその色をペアにして保存
-      const randomKeywordsWithColors = randomFields.map((field) => ({
-        ...field,
-        color: generateRandomColor(),
-      }));
-
-      setKeywordsWithColors(randomKeywordsWithColors);
+      // 全データをセット
+      setAllKeywords(allFieldsArray);
+      // 最初の表示用にランダムで6個選択
+      selectRandomKeywords(allFieldsArray);
     } catch (error) {
       console.error("Error fetching subcollection documents: ", error);
     }
   };
 
-  // シャッフル関数
-  const handleShuffle = () => {
-    const shuffledKeywordsWithColors = shuffleArray(
-      keywordsWithColors.map((item) => ({
-        ...item,
-        color: generateRandomColor(),
-      }))
-    );
-    setKeywordsWithColors(shuffledKeywordsWithColors);
+  // ランダムに6個選択する関数
+  const selectRandomKeywords = (data) => {
+    const shuffledArray = shuffleArray(data);
+    const randomFields = shuffledArray.slice(0, 6);
+    const randomKeywordsWithColors = randomFields.map((field) => ({
+      ...field,
+      color: generateRandomColor(),
+    }));
+    setKeywordsWithColors(randomKeywordsWithColors);
   };
 
   useEffect(() => {
@@ -73,9 +68,14 @@ export default function Word1() {
     }
   }, [testerNumber, episodeType]);
 
+    // リフレッシュ時にデータ再取得
+    const handleRefresh = async () => {
+      await fetchAllDocuments();
+    };
+
   return (
-    <ShuffleOnPull keywordsWithColors={keywordsWithColors} onShuffle={handleShuffle}>
-      <ul className={styles.list}>
+    <PullToRefreshView onRefresh={handleRefresh} keywordsWithColors={keywordsWithColors}>
+      <ul className={styles.list0}>
         {keywordsWithColors.map((item, index) => (
           <li key={item.id || index}>
             <button
@@ -89,6 +89,6 @@ export default function Word1() {
           </li>
         ))}
       </ul>
-    </ShuffleOnPull>
+    </PullToRefreshView>
   );
 }

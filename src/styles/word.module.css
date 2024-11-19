@@ -3,13 +3,18 @@
   padding-top: 0; /* 必要に応じて調整 */
   width: 100%;
   height: 100vh; /* 画面全体を使用するための高さ */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden; /* 子要素がはみ出さないようにする */
+  display: grid;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* overflow: hidden; */
+  /* flex-direction: column; */
+  grid-template-rows: auto 1fr;
 }
 
 .selectedWordContainer {
+  position: relative;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   margin-bottom: 1em;
@@ -45,7 +50,28 @@
   flex-shrink: 0;
 }
 
+.list0{
+  position: relative; /* 子要素の配置を相対的にする */
+  width: 100%;
+  height: 100%; /* 親要素の高さを基準にする */
+  padding: 0;
+  list-style-type: none; /* リストの「・」を非表示 */
+  margin: 0;
+  padding-top: 25px;
+  padding-bottom: 60px; /* 戻るボタンのためのスペース確保 */
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* 単語リストのスタイル */
+.listContainer {
+  overflow-y: auto;
+  padding: 10px;
+}
+
 .list {
+  flex: 1;
+  overflow-y: auto;
   position: relative; /* 子要素の配置を相対的にする */
   width: 100%;
   height: 100%; /* 親要素の高さを基準にする */
@@ -56,6 +82,10 @@
   padding-bottom: 60px; /* 戻るボタンのためのスペース確保 */
   flex-wrap: wrap;
   gap: 0.5em;
+}
+
+.list li {
+  margin-bottom: 10px;
 }
 
 .listItem {
