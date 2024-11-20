@@ -3,7 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
 import { useRouter } from "next/router";
 import { shuffleArray } from "@/firestoreUtils.jsx";
-import { generateRandomColor } from "@/colorUtils.jsx";
+import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
@@ -46,6 +46,8 @@ export default function Word1() {
       setAllKeywords(allFieldsArray);
       // 最初の表示用にランダムで6個選択
       selectRandomKeywords(allFieldsArray);
+      const randomColors = randomFields.map(() => generateRandomColor());
+      setColors(randomColors);
     } catch (error) {
       console.error("Error fetching subcollection documents: ", error);
     }
@@ -67,6 +69,8 @@ export default function Word1() {
       fetchAllDocuments();
     }
   }, [testerNumber, episodeType]);
+
+  useBackgroundColor();
 
     // リフレッシュ時にデータ再取得
     const handleRefresh = async () => {

@@ -108,11 +108,11 @@ export default function Word2() {
               </li>
             ))}
           </ul>
+          </PullToRefreshView>
 
           <Link href={`/research/${testerNumber}/${episodeID}/${word1}`}>
             <button className={styles.backButton}>戻る</button>
           </Link>
-        </PullToRefreshView>
       </div>
     </div>
   );

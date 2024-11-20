@@ -14,7 +14,7 @@ import { PullToRefreshView } from "@/PullToRefreshView";
 
 export default function Word1() {
   const router = useRouter();
-  const { episodeID, word1 } = router.query;
+  const { word1 } = router.query;
   const [keywords, setKeywords] = useState([]);
   const [colors, setColors] = useState([]);
   const { testerNumber } = router.query;
@@ -97,18 +97,16 @@ export default function Word1() {
 
   return (
     <div className={styles.container}>
-      {/* 固定表示される選択した単語の枠 */}
       <div className={styles.selectedWordContainer}>
         <h3 className={styles.selectedWordText}>選択した単語：</h3>
         <div className={styles.selectedWordsList}>
           <span className={styles.selectedWordHighlight}>{word1}</span>
         </div>
       </div>
-
       {/* PullToRefreshView は単語リスト部分のみを包む */}
       <div className={styles.listContainer}>
-        <PullToRefreshView onRefresh={handleRefresh}>
-          <ul className={styles.list}>
+      <PullToRefreshView onRefresh={handleRefresh}>
+      <ul className={styles.list}>
             {keywords.map((item, index) => (
               <li key={index}>
                 <button
@@ -122,12 +120,11 @@ export default function Word1() {
               </li>
             ))}
           </ul>
-
+          </PullToRefreshView>
           <Link href={`/research/${testerNumber}`}>
             <button className={styles.backButton}>戻る</button>
           </Link>
-          </PullToRefreshView>
-          </div>
+      </div>
     </div>
   );
 }

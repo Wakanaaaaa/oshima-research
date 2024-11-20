@@ -121,13 +121,13 @@ export default function Word4() {
               </li>
             ))}
           </ul>
+          </PullToRefreshView>
 
           <Link
             href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}/${word3}`}
           >
             <button className={styles.backButton}>戻る</button>
           </Link>
-        </PullToRefreshView>
       </div>
     </div>
   );
