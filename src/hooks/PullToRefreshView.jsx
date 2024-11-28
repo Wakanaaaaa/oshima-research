@@ -43,7 +43,7 @@ export function PullToRefreshView({ children, onRefresh }) {
   );
 
   const handleTouchEnd = useCallback(() => {
-    const limitScrollY = 40;
+    const limitScrollY = 50;
     scrollStateRef.current = scrollStateType.end;
 
     if (limitScrollY <= scrollY) {
@@ -53,7 +53,7 @@ export function PullToRefreshView({ children, onRefresh }) {
 
   const tick = useCallback(() => {
     if (scrollStateRef.current === scrollStateType.end) {
-      const scrollRate = 0.9;
+      const scrollRate = 1.0;
       scrollYRef.current *= scrollRate;
 
       if (Math.abs(scrollYRef.current) < 1) {
