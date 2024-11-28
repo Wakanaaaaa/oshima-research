@@ -19,6 +19,7 @@ export default function Home() {
     }
   };
 
+  // 被験者番号の入力変更処理
   const handleInputChange = (e) => {
     setTesterNumber(e.target.value); // 入力された値を更新
   };
@@ -40,18 +41,19 @@ export default function Home() {
             type="number"
             value={testerNumber}
             onChange={handleInputChange}
+            required
           />
         </div>
 
         <div className="input-group">
-          <label htmlFor="episode-switcher" className={styles.episodeSwitcher}>
-            エピソードを選択
-          </label>
           <select
             id="episode-switcher"
-            value={episodeType}
+            value={episodeType || ""} // 初期値は空に設定
             onChange={handleEpisodeChange}
           >
+            <option value="" disabled>
+              エピソードを選択
+            </option>
             <option value="episodeA">Episode A</option>
             <option value="episodeB">Episode B</option>
             <option value="episodeC">Episode C</option>
