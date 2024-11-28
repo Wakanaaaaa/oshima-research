@@ -74,7 +74,6 @@
   margin: 5px;
   border-radius: 50px;
   border: 3px solid transparent;
-  background: #fff;
   width: 95%; /* 幅を広げる */
   height: 100px; /* 高さを大きくする */
   box-sizing: border-box;
@@ -82,14 +81,32 @@
   overflow: hidden; /* はみ出した文字を隠す */
   text-overflow: ellipsis; /* はみ出した文字に「...」を表示 */
   display: inline-block; /* inline-blockを指定することで、widthが効くようにする */
+  color: #181818; /* 白い文字でコントラストを高める */
+  background: #f7f7f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 立体感を演出 */
 }
+
 
 .backButton {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  bottom: 10px; /* 少し上にずらして自然な位置に配置 */
+  left: 50%;
+  transform: translateX(-50%); /* 中央揃え */
+  width: 90%; /* モバイルでの視認性を向上 */
+  max-width: 400px; /* デスクトップでは幅を制限 */
+  padding: 12px 20px; /* タップしやすいサイズ感 */
+  background-color: rgba(0, 0, 0, 0.7); /* 半透明で上品な背景色 */
+  color: #ffffff; /* 白い文字でコントラストを高める */
+  font-size: 16px; /* 読みやすい文字サイズ */
+  font-weight: bold;
   text-align: center;
-  padding: 10px 0;
-  background-color: #f1f1f1;
+  border-radius: 10px; /* 丸みをつけて柔らかい印象に */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* 少し影を付けて浮き上がらせる */
+  cursor: pointer;
+  transition: all 0.3s ease; /* ホバー時のアニメーションを追加 */
+}
+
+.backButton:active {
+  background-color: rgba(0, 0, 0, 0.5); /* タップ時に少し明るくする */
+  transform: translateX(-50%) scale(0.95); /* タップ感を出す */
 }
