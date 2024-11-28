@@ -109,7 +109,7 @@
   text-overflow: ellipsis; /* はみ出した文字に「...」を表示 */
   display: inline-block; /* inline-blockを指定することで、widthが効くようにする */
   color: #181818; /* 白い文字でコントラストを高める */
-  background: #f7f7f7;
+  background: #fdfdfd;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 立体感を演出 */
 }
 

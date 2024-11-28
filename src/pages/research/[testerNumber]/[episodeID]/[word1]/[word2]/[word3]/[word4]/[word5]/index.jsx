@@ -25,7 +25,7 @@ export default function Word5() {
           db,
           "4Wwords",
           testerNumber,
-          "episodeB"
+          episodeType
         );
 
         const subcollectionSnapshot = await getDocs(subcollectionRef);

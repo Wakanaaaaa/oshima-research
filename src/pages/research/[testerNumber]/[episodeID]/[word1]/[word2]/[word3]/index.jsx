@@ -86,12 +86,8 @@ export default function Word3() {
 
   useBackgroundColor();
 
-  const handleRefresh = async () => {
-    await fetchDocumentsForWord1();
-  };
-
   return (
-    <div className={styles.container}>
+    <div>
       <div className={styles.selectedWordContainer}>
         <h3 className={styles.selectedWordText}>選択した単語：</h3>
         <div className={styles.selectedWordsList}>
@@ -101,30 +97,24 @@ export default function Word3() {
         </div>
       </div>
 
-      <div className={styles.listContainer}>
-        <PullToRefreshView onRefresh={handleRefresh}>
-          <ul className={styles.list}>
-            {keywords.map((item, index) => (
-              <li key={item.id || index}>
-                <button
-                  className={styles.button}
-                  style={{ borderColor: colors[index] }}
-                  id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${item.value}`}
-                  ref={addToRefs}
-                >
-                  {item.value}
-                </button>
-              </li>
-            ))}
-          </ul>
-          </PullToRefreshView>
+      <ul className={styles.list}>
+        {keywords.map((item, index) => (
+          <li key={item.id || index}>
+            <button
+              className={styles.button}
+              style={{ borderColor: colors[index] }}
+              id={`/research/${testerNumber}/${item.episodeID}/${word1}/${word2}/${word3}/${item.value}`}
+              ref={addToRefs}
+            >
+              {item.value}
+            </button>
+          </li>
+        ))}
+      </ul>
 
-          <Link
-            href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}`}
-          >
-            <button className={styles.backButton}>戻る</button>
-          </Link>
-      </div>
+      <Link href={`/research/${testerNumber}/${episodeID}/${word1}/${word2}`}>
+        <button className={styles.backButton}>戻る</button>
+      </Link>
     </div>
   );
 }

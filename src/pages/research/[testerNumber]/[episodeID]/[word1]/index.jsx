@@ -10,7 +10,6 @@ import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import Link from "next/link";
 import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
-import { PullToRefreshView } from "@/PullToRefreshView";
 
 export default function Word1() {
   const router = useRouter();
@@ -90,22 +89,14 @@ export default function Word1() {
   // 背景色の設定
   useBackgroundColor();
 
-  // リフレッシュ時にデータ再取得
-  const handleRefresh = async () => {
-    await fetchDocumentsForWord1();
-  };
-
   return (
-    <div className={styles.container}>
+    <div>
       <div className={styles.selectedWordContainer}>
         <h3 className={styles.selectedWordText}>選択した単語：</h3>
         <div className={styles.selectedWordsList}>
           <span className={styles.selectedWordHighlight}>{word1}</span>
         </div>
       </div>
-      {/* PullToRefreshView は単語リスト部分のみを包む */}
-      <div className={styles.listContainer}>
-      <PullToRefreshView onRefresh={handleRefresh}>
       <ul className={styles.list}>
             {keywords.map((item, index) => (
               <li key={index}>
@@ -120,11 +111,9 @@ export default function Word1() {
               </li>
             ))}
           </ul>
-          </PullToRefreshView>
           <Link href={`/research/${testerNumber}`}>
             <button className={styles.backButton}>戻る</button>
           </Link>
       </div>
-    </div>
   );
 }

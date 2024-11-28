@@ -4,9 +4,9 @@ import { useRouter } from "next/router";
 // カスタムフック
 export const usePinchZoom = (testerNumber) => {
   const targetRefs = useRef([]);
-  const initialDistanceRef = useRef(0);
-  const zoomedElementRef = useRef(null);
-  const targetIDRef = useRef(""); // 初期値を空文字列に設定
+  const initialDistanceRef = useRef(0); // useRefで初期化
+  const zoomedElementRef = useRef(null); // useRefで初期化
+  const targetIDRef = useRef("/null/null"); // useRefで初期化
   const router = useRouter();
 
   const getDistance = (touches) => {
@@ -20,15 +20,12 @@ export const usePinchZoom = (testerNumber) => {
     const handleTouchStart = (e) => {
       if (e.touches.length === 2) {
         e.preventDefault();
-        initialDistanceRef.current = getDistance(e.touches);
+        initialDistanceRef.current = getDistance(e.touches); // useRefのcurrentプロパティに保存
 
         targetRefs.current.forEach((ref) => {
           if (ref && ref.contains(e.target)) {
-            zoomedElementRef.current = ref;
-            targetIDRef.current = e.target.id;
-
-            // ズーム対象の要素を最前面に移動
-            zoomedElementRef.current.style.zIndex = "100";
+            zoomedElementRef.current = ref; // useRefで管理
+            targetIDRef.current = e.target.id; // useRefで管理
           }
           console.log("targetID:", targetIDRef.current);
         });
@@ -46,28 +43,19 @@ export const usePinchZoom = (testerNumber) => {
             zoomedElementRef.current.style.transform = `scale(${zoomFactor})`;
           }
           if (zoomFactor > 2.0) {
-            const fullPath = `/${targetIDRef.current}`;
+            const fullPath = `/${targetIDRef.current}`; // useRefで管理
             router.push(fullPath);
           }
         }
       }
     };
 
-    const handleTouchEnd = () => {
-      if (zoomedElementRef.current) {
-        // ズーム終了時に z-index をリセット
-        zoomedElementRef.current.style.zIndex = "";
-      }
-    };
-
     document.addEventListener("touchstart", handleTouchStart, { passive: false });
     document.addEventListener("touchmove", handleTouchMove, { passive: false });
-    document.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     return () => {
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchmove", handleTouchMove);
-      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, [router, testerNumber]);
 

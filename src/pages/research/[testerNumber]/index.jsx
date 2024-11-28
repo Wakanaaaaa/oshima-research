@@ -7,7 +7,6 @@ import { generateRandomColor, useBackgroundColor } from "@/colorUtils.jsx";
 import { usePinchZoom } from "@/hooks/usePinchZoom.jsx";
 import styles from "@/styles/word.module.css";
 import { useEpisode } from "@/contexts/EpisodeContext";
-import { PullToRefreshView } from "@/PullToRefreshView";
 
 export default function Word1() {
   const router = useRouter();
@@ -72,14 +71,8 @@ export default function Word1() {
 
   useBackgroundColor();
 
-    // リフレッシュ時にデータ再取得
-    const handleRefresh = async () => {
-      await fetchAllDocuments();
-    };
-
   return (
-    <PullToRefreshView onRefresh={handleRefresh} keywordsWithColors={keywordsWithColors}>
-      <ul className={styles.list0}>
+      <ul className={styles.list}>
         {keywordsWithColors.map((item, index) => (
           <li key={item.id || index}>
             <button
@@ -93,6 +86,5 @@ export default function Word1() {
           </li>
         ))}
       </ul>
-    </PullToRefreshView>
   );
 }
