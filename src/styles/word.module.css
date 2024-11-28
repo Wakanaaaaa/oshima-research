@@ -47,8 +47,12 @@
   background-color: #ccefff;
   padding: 0.3em 0.6em;
   border-radius: 5px;
-  white-space: nowrap;
-  flex-shrink: 0;
+  white-space: normal; /* 折り返しを有効化 */
+  word-wrap: break-word; /* 必要に応じて単語を折り返し */
+  overflow-wrap: break-word; /* モダンブラウザ対応 */
+  word-break: break-all; /* 長い単語に対応 */
+  max-width: 100%; /* 親要素に収まるように調整 */
+  overflow: hidden; /* 必要に応じて溢れる部分を隠す */
 }
 
 .list0 {
