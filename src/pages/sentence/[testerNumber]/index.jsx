@@ -6,17 +6,19 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../../firebase";
 import styles from "../../../styles/SentenceList.module.css";
 import { PullToRefreshView } from "../../../hooks/PullToRefreshView";
+import { useEpisode } from "../../../contexts/EpisodeContext";
 
 export default function SentenceList() {
   const router = useRouter();
   const { testerNumber } = router.query;
   const [sentences, setSentences] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { episodeType } = useEpisode();
 
   const fetchSentences = async () => {
     if (!testerNumber) return;
     try {
-      const episodesRef = collection(db, "4Wwords", testerNumber, "episodeC");
+      const episodesRef = collection(db, "4Wwords", testerNumber, episodeType);
       const querySnapshot = await getDocs(episodesRef);
 
       const filteredSentences = querySnapshot.docs

@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import styles from "./page.module.css";
 import { useEpisode } from "../../contexts/EpisodeContext";
 
 export default function InputTesterNumber() {
   const router = useRouter();
+  const [testerNumber, setTesterNumber] = useState(""); // 被験者番号を保存する状態を追加
   const { episodeType, setEpisodeType } = useEpisode();
 
   const onSubmit = (e) => {
@@ -14,6 +16,10 @@ export default function InputTesterNumber() {
     if (testerNumber) {
       router.push(`/sentence/${testerNumber}`);
     }
+  };
+
+  const handleInputChange = (e) => {
+    setTesterNumber(e.target.value); // 入力された値を更新
   };
 
   // エピソードIDの選択変更処理
@@ -26,7 +32,13 @@ export default function InputTesterNumber() {
       <h2 className={styles.title}>実験参加者番号を入力してください</h2>
       <form onSubmit={onSubmit}>
         <label htmlFor="tester-number">実験参加者番号</label>
-        <input id="tester-number" type="number" required />
+        <input
+          id="tester-number"
+          type="number"
+          value={testerNumber}
+          onChange={handleInputChange}
+          required
+        />
 
         <div className="input-group">
           <label htmlFor="episode-switcher" className={styles.episodeSwitcher}>
